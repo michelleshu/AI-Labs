@@ -1,6 +1,9 @@
 package assignment_robots;
 
 
+import java.util.HashMap;
+import java.util.LinkedList;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.shape.Polygon;
@@ -29,7 +32,7 @@ public class CarDriver extends Application {
 		double[][] current = car.get();
 		Double[] to_add = new Double[2*current.length];
 		for (int j = 0; j < current.length; j++) {
-			System.out.println(current[j][0] + ", " + current[j][1]);
+			//System.out.println(current[j][0] + ", " + current[j][1]);
 			to_add[2*j] = current[j][0];
 			//to_add[2*j+1] = current[j][1];
 			to_add[2*j+1] = window_height - current[j][1];
@@ -97,23 +100,28 @@ public class CarDriver extends Application {
 		// Declaring a world; 
 		World w = new World();
 		// Add obstacles to the world;
-		w.addObstacle(obstacle1);
-		w.addObstacle(obstacle2);
-		w.addObstacle(obstacle3);
-		w.addObstacle(obstacle4);
-		w.addObstacle(obstacle5);
+		//w.addObstacle(obstacle1);
+		//w.addObstacle(obstacle2);
+		//w.addObstacle(obstacle3);
+		//w.addObstacle(obstacle4);
+		//w.addObstacle(obstacle5);
 			
 		plotWorld(g, w);
 		
-		CarRobot car = new CarRobot();
+		CarRobot start = new CarRobot();
+		CarRobot goal = new CarRobot();
+		CarState ss = new CarState(0, 0, 0);
+		CarState gs = new CarState(200, 300, 2);
 		
-		CarState state1 = new CarState(270, 15, 0);
-	    // Set CarState;
-		car.set(state1);
+		start.set(ss);
+		goal.set(gs);
 		
-		boolean collided = w.carCollisionPath(car, state1, 0, 1.2);
-	    System.out.println(collided);
-		plotCarRobot(g, car, state1);
+		HashMap<CarRobot, CarRobot> pred = CarRRT.buildRRT(w, start, goal);
+		LinkedList<CarRobot> path = CarRRT.backchain(start, goal, pred);
+		
+		for (CarRobot car : path) {
+			plotCarRobot(g, car, car.getCarState());
+		}
 		
 	    scene.setRoot(g);
 	    primaryStage.show();

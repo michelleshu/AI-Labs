@@ -17,7 +17,7 @@ public class CarRRT {
 	// Relative importance of angle compared to position in distance metric
 	public static final double THETA_WEIGHT = 20;
 	// How close we require end of search to be to goal
-	public static final double TOL = 1;
+	public static final double TOL = 10;
 	
 	// Compute a RRT from start configuration to goal configuration
 	// Returns a predecessor HashMap containing path from start to goal
@@ -42,7 +42,7 @@ public class CarRRT {
 		Random rand = new Random();
 		
 		for (int control = 0; control < 6; control++) {
-			double time = rand.nextDouble();
+			double time = rand.nextDouble() * 10;
 			if (! w.carCollisionPath(new CarRobot(), current.getCarState(), 
 					control, time)) {
 				CarState newState = SteeredCar.move(current.getCarState(), 
@@ -67,7 +67,7 @@ public class CarRRT {
 		
 		// Euclidean distance between (x, y) locations
 		distance += Math.sqrt(Math.pow(sb.getX() - sa.getX(), 2) + 
-				Math.pow(sb.getY() - sb.getY(), 2));
+				Math.pow(sb.getY() - sa.getY(), 2));
 		
 		// Angle distance between thetas
 		double td = Math.abs(sb.getTheta() - sa.getTheta());
@@ -75,7 +75,7 @@ public class CarRRT {
 		return distance;
 	}
 	
-	private static LinkedList<CarRobot> backchain(CarRobot start, CarRobot goal,
+	public static LinkedList<CarRobot> backchain(CarRobot start, CarRobot goal,
 			HashMap<CarRobot, CarRobot> pred) {
 		LinkedList<CarRobot> path = new LinkedList<CarRobot>();
 		CarRobot current = goal;
@@ -91,17 +91,13 @@ public class CarRRT {
 		World w = new World();
 		CarRobot start = new CarRobot();
 		CarRobot goal = new CarRobot();
-		CarState ss = new CarState(1, 1, 0);
-		CarState gs = new CarState(20, 1, 0);
+		CarState ss = new CarState(1, 0, 0);
+		CarState gs = new CarState(20, 3, 2);
 		
 		start.set(ss);
 		goal.set(gs);
 		
 		HashMap<CarRobot, CarRobot> pred = buildRRT(w, start, goal);
-		System.out.println(pred.size());
 		LinkedList<CarRobot> path = backchain(start, goal, pred);
-		for (CarRobot r : path) {
-			System.out.println(r);
-		}
 	}
 }
