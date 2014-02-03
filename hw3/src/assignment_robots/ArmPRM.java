@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Random;
-import java.util.Set;
 
 import assignment_robots.World;
 import assignment_robots.ArmLocalPlanner;
@@ -20,13 +19,11 @@ import assignment_robots.ArmRobot;
 
 public class ArmPRM {
 	
-	public static final int NUM_RAND_SAMPLES = 300; 
-	public static final int NUM_ARM_LINKS = 2;
-	public static final int MAX_X = 600;
-	public static final int MAX_Y = 400;
-	public static final double TOL = 0.1; // minimum acceptable distance
+	public static final int NUM_RAND_SAMPLES = 10; 
+	public static final int NUM_ARM_LINKS = 1;
+	public static final double TOL = 0.2; // minimum acceptable distance
 										   // between two configs in path
-	public static final int K = 15; // # of nearest neighbors to explore
+	public static final int K = 3; // # of nearest neighbors to explore
 	
 	public static HashMap<ArmRobot, ArrayList<ArmRobot>> buildPRM(World w) {
 		// The graph G is represented as an adjacency list
@@ -36,10 +33,14 @@ public class ArmPRM {
 		// Get random sequence of configuration states to try
 		ArrayList<ArmRobot> randomStates = getRandomConfigs(NUM_ARM_LINKS);
 		
+		// Add all states to graph
+		for (ArmRobot state : randomStates) {
+			G.put(state, new ArrayList<ArmRobot>());
+		}
+		
 		for (ArmRobot state : randomStates) {
 			if (! w.armCollision(state)) { // this state is in Cfree
-				G.put(state, new ArrayList<ArmRobot>());
-				PriorityQueue<ArmRobot> KNN = getNearestNeighbors(state, G.keySet());
+				PriorityQueue<ArmRobot> KNN = getNearestNeighbors(state, randomStates);
 				for (int i = 0; i < KNN.size(); i++) {
 					ArmRobot neighbor = KNN.poll();
 					if ((! w.armCollisionPath(new ArmRobot(NUM_ARM_LINKS), 
@@ -76,7 +77,7 @@ public class ArmPRM {
 	}
 	
 	public static PriorityQueue<ArmRobot> getNearestNeighbors(ArmRobot a, 
-			Set<ArmRobot> neighbors) {
+			ArrayList<ArmRobot> neighbors) {
 		PriorityQueue<ArmRobot> kNearest = new PriorityQueue<ArmRobot>(
 				new KNNComparator(a));
 		
@@ -123,7 +124,9 @@ public class ArmPRM {
 		double[] configB = b.getConfig();
 		double squaredSum = 0;
 		for (int i = 0; i < configA.length; i++) {
-			squaredSum += Math.pow(configA[i] - configB[i], 2);
+			double d = Math.abs(configA[i] - configB[i]);
+			// Take shortest distance of no wrap v wrap
+			squaredSum += Math.pow(Math.min(d, (2 * Math.PI) - d), 2);
 		}
 		return Math.sqrt(squaredSum);
 	}
@@ -199,11 +202,15 @@ public class ArmPRM {
 		ArmRobot current = goal;
 		while (prev.get(current) != start) {
 			// Use local planner to get subpath
-			appendLocalPath(path, current, prev.get(current));
+			if (distance(current, prev.get(current)) > TOL) {
+				appendLocalPath(path, current, prev.get(current));
+			}
 			path.addFirst(current);
 			current = prev.get(current);
 		}
-		appendLocalPath(path, current, prev.get(current));
+		if (distance(current, prev.get(current)) > TOL) {
+			appendLocalPath(path, current, prev.get(current));
+		}
 		path.addFirst(start);
 		return path;
 	}
@@ -211,6 +218,9 @@ public class ArmPRM {
 	public static void appendLocalPath(LinkedList<ArmRobot> path, 
 			ArmRobot a, ArmRobot b) {
 		double[] velocity = ArmLocalPlanner.getPath(a.getConfig(), b.getConfig());
+		System.out.println("a = " + a);
+		System.out.println("b = " + b);
+		System.out.println("Velocity: " + velocity[0]);
 		ArmRobot a1 = new ArmRobot(NUM_ARM_LINKS); // copy of a
 		a1.set(a.getConfig());
 		while (distance(a1, b) > TOL) {
@@ -223,7 +233,7 @@ public class ArmPRM {
 		}
 	}
 	
-//	public static void main(String[] args) {
+	public static void main(String[] args) {
 //		World w = new World();
 //		HashMap<ArmRobot, ArrayList<ArmRobot>> PRM = buildPRM(w);
 //		System.out.println("All configs: ");
@@ -239,6 +249,6 @@ public class ArmPRM {
 //		ArmRobot closest = getClosestPRMNode(PRM, a);
 //		System.out.println("a = " + a);
 //		System.out.println("closest = " + closest);
-//	}
+	}
 	
 }

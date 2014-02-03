@@ -107,9 +107,8 @@ public class World {
 		
 		double[] config = new double[config1.length];
 		
-		ArmLocalPlanner ap = new ArmLocalPlanner();
-		double time = ap.moveInParallel(config1, config2);
-		double[] path = ap.getPath(config1, config2);
+		double time = ArmLocalPlanner.moveInParallel(config1, config2);
+		double[] path = ArmLocalPlanner.getPath(config1, config2);
 		double step = 0.5;
 		for (int i = 0; i < config1.length; i++) {
 			config[i] = config1[i];

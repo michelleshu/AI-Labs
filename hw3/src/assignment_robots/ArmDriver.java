@@ -56,7 +56,6 @@ public class ArmDriver extends Application {
 			to_add = new Double[2*current.length];
 			for (int j = 0; j < current.length; j++) {
 				to_add[2*j] = current[j][0];
-				//to_add[2*j+1] = current[j][1];
 				to_add[2*j+1] = window_height - current[j][1];
 			}
 			p = new Polygon();
@@ -107,11 +106,11 @@ public class ArmDriver extends Application {
 		
 		plotWorld(g, w);
 		
-		ArmRobot arm1 = new ArmRobot(2);
-		ArmRobot arm2 = new ArmRobot(2);
+		ArmRobot arm1 = new ArmRobot(1);
+		ArmRobot arm2 = new ArmRobot(1);
 		
-		double[] config1 = {Math.PI / 4, Math.PI / 4};
-		double[] config2 = {0.1, 0.2};
+		double[] config1 = {0};
+		double[] config2 = {1};
 		
 		arm1.set(config1);
 		arm2.set(config2);
@@ -121,18 +120,13 @@ public class ArmDriver extends Application {
 		ArmRobot goalNode = ArmPRM.getClosestPRMNode(PRM, arm2);
 		
 		LinkedList<ArmRobot> path1 = new LinkedList<ArmRobot>();
+		path1.addFirst(arm1);
 		ArmPRM.appendLocalPath(path1, arm1, startNode);
-				
+		path1.addFirst(startNode);
 				
 		LinkedList<ArmRobot> path2 = ArmPRM.getBFSPath(PRM, startNode, goalNode);
 		
-		//for (ArmRobot r : path1) {
-			//System.out.println(r);
-		//	plotArmRobot(g, r);
-		//}
-		
 		for (ArmRobot r : path2) {
-			System.out.println(r);
 			plotArmRobot(g, r);
 		}
 		

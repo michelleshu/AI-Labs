@@ -9,31 +9,17 @@ public class ArmLocalPlanner {
 	// Get the time to move from configuration 1 to configuration 2;
 	// two configurations must be valid configurations for the arm; 
 	public static double moveInParallel(double[] config1, double[] config2) {
-		if (config1.length != config2.length) {
-			System.exit(1);
-		}
-		if (config1.length % 2 != 0) {
-			System.exit(1);
-		}
-		
 		double d = 0;
 		double maxt = 0;
 		
-		for (int i = 0; i < (config1.length/2); i++) {
-			if (i == 0) {
-				d = Math.sqrt(Math.pow(config1[0]-config2[0], 2)+Math.pow(config1[1]-config2[1], 2));
-				
-			}
-			else {
-				d = Math.abs(config1[2*i+1]-config2[2*i+1]);
-			}
+		for (int i = 0; i < config1.length; i++) {
+			d = Math.abs(config1[i] - config2[i]);
+			d = Math.min(d, (2 * Math.PI) - d); // min of wrap, no wrap
 			if (d > maxt) {
 				maxt = d;
 			}
-			
 		}
-		
-		return maxt * 5;
+		return maxt * 10;
 	}
 	
 	// Given two configurations, get the "path" between configurations;
@@ -47,10 +33,18 @@ public class ArmLocalPlanner {
 		
 		for (int i = 0; i < config1.length; i++) {
 			path[i] = (config2[i] - config1[i]) / time;
+			// Easier to go counterclockwise?
+			if (Math.abs(config2[i] - config1[i]) > Math.PI) {
+				path[i] = -path[i];
+			}
 		}
 		
 		return path;
 	}
 	
-	
+	public static void main(String[] args) {
+		double[] config1 = {0, 2};
+		double[] config2 = {0, 1};
+		System.out.println(getPath(config1, config2)[1]);
+	}
  }
