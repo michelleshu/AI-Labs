@@ -6,13 +6,15 @@ package assignment_robots;
 // angles of each segment from the previous segment.
 
 public class ArmRobot {
+	protected final double BASE_X = 30;
+	protected final double BASE_Y = 30;
 	// Configuration: angles of links from one another
 	protected double[] config;
 	// Number of links
 	protected int links;
 	// Dimensions of each link
-	protected static double length = 80;
-	protected static double width = 10;
+	protected static double length = 100;
+	protected static double width = 5;
 	
 	public int getLinks() {
 		return links;
@@ -58,8 +60,8 @@ public class ArmRobot {
 	public double[][] getLinkBox(int i) {
 		double[][] rect = new double[4][2];
 		
-		double x = 0;
-		double y = 0;
+		double x = BASE_X;
+		double y = BASE_Y;
 		double angle = 0;
 		for (int j = 0; j < i - 1; j++) {
 			angle = (angle + config[j]) % (2 * Math.PI);

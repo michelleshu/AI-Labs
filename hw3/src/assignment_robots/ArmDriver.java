@@ -25,7 +25,7 @@ public class ArmDriver extends Application {
 	}
 	
 	// plot a ArmRobot;
-	public void plotArmRobot(Group g, ArmRobot arm) {
+	public void plotArmRobot(Group g, ArmRobot arm, Color c) {
 		double[][] current;
 		Double[] to_add;
 		Polygon p;
@@ -40,7 +40,7 @@ public class ArmDriver extends Application {
 			p = new Polygon();
 			p.getPoints().addAll(to_add);
 			p.setStroke(Color.BLUE);
-			p.setFill(Color.LIGHTBLUE);
+			p.setFill(c);
 			g.getChildren().add(p);
 		}
 		
@@ -97,41 +97,57 @@ public class ArmDriver extends Application {
 		double c[][] = {{110, 220}, {250, 380}, {320, 220}};
 		Poly obstacle3 = new Poly(c);
 		
+		double bb[][] = {{0, 0}, {0, 2}, {600, 2}, {600, 0}};
+		Poly bottom_border = new Poly(bb);
+		
+		double lb[][] = {{0, 400}, {2, 400}, {2, 0}, {0, 0}};
+		Poly left_border = new Poly(lb);
+		
 		// Declaring a world; 
 		World w = new World();
 		// Add obstacles to the world;
 		w.addObstacle(obstacle1);
 		w.addObstacle(obstacle2);
 		w.addObstacle(obstacle3);
+		w.addObstacle(bottom_border);
+		w.addObstacle(left_border);
 		
 		plotWorld(g, w);
 		
-		ArmRobot arm1 = new ArmRobot(1);
-		ArmRobot arm2 = new ArmRobot(1);
+		ArmRobot arm1 = new ArmRobot(2);
+		ArmRobot arm2 = new ArmRobot(2);
 		
-		double[] config1 = {0};
-		double[] config2 = {1};
+		double[] config1 = {0, 0};
+		double[] config2 = {0, 1};
 		
 		arm1.set(config1);
 		arm2.set(config2);
 		
 		HashMap<ArmRobot, ArrayList<ArmRobot>> PRM = ArmPRM.buildPRM(w);
+		System.out.println(PRM.size());
+		
 		ArmRobot startNode = ArmPRM.getClosestPRMNode(PRM, arm1);
 		ArmRobot goalNode = ArmPRM.getClosestPRMNode(PRM, arm2);
 		
-		LinkedList<ArmRobot> path1 = new LinkedList<ArmRobot>();
-		path1.addFirst(arm1);
-		ArmPRM.appendLocalPath(path1, arm1, startNode);
-		path1.addFirst(startNode);
+		//LinkedList<ArmRobot> path1 = new LinkedList<ArmRobot>();
+		//path1.addFirst(arm1);
+		//ArmPRM.appendLocalPath(path1, arm1, startNode);
+		//path1.addFirst(startNode);
+		
+		//System.out.println(startNode);
+		//System.out.println(goalNode);
 				
 		LinkedList<ArmRobot> path2 = ArmPRM.getBFSPath(PRM, startNode, goalNode);
 		
+		int intensity = 200;
 		for (ArmRobot r : path2) {
-			plotArmRobot(g, r);
+			System.out.println(r);
+			plotArmRobot(g, r, Color.rgb(intensity, intensity, 255));
+			intensity -= 10;
 		}
 		
-		plotArmRobot(g, startNode);
-		plotArmRobot(g, goalNode);
+		//plotArmRobot(g, startNode);
+		//plotArmRobot(g, goalNode);
 		
 		
 	    scene.setRoot(g);

@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Random;
+import java.util.Set;
 
 import assignment_robots.World;
 import assignment_robots.ArmLocalPlanner;
@@ -19,11 +20,11 @@ import assignment_robots.ArmRobot;
 
 public class ArmPRM {
 	
-	public static final int NUM_RAND_SAMPLES = 10; 
-	public static final int NUM_ARM_LINKS = 1;
+	public static final int NUM_RAND_SAMPLES = 200; 
+	public static final int NUM_ARM_LINKS = 2;
 	public static final double TOL = 0.2; // minimum acceptable distance
 										   // between two configs in path
-	public static final int K = 3; // # of nearest neighbors to explore
+	public static final int K = 15; // # of nearest neighbors to explore
 	
 	public static HashMap<ArmRobot, ArrayList<ArmRobot>> buildPRM(World w) {
 		// The graph G is represented as an adjacency list
@@ -31,27 +32,24 @@ public class ArmPRM {
 				new HashMap<ArmRobot, ArrayList<ArmRobot>>();
 		
 		// Get random sequence of configuration states to try
-		ArrayList<ArmRobot> randomStates = getRandomConfigs(NUM_ARM_LINKS);
+		ArrayList<ArmRobot> randomStates = getRandomConfigs(NUM_ARM_LINKS, w);
 		
-		// Add all states to graph
+		// Add all non-collision states to graph
 		for (ArmRobot state : randomStates) {
 			G.put(state, new ArrayList<ArmRobot>());
 		}
 		
-		for (ArmRobot state : randomStates) {
-			if (! w.armCollision(state)) { // this state is in Cfree
-				PriorityQueue<ArmRobot> KNN = getNearestNeighbors(state, randomStates);
-				for (int i = 0; i < KNN.size(); i++) {
-					ArmRobot neighbor = KNN.poll();
-					if ((! w.armCollisionPath(new ArmRobot(NUM_ARM_LINKS), 
-						state.getConfig(), neighbor.getConfig())) && 
-						(! inSameComponent(G, state, neighbor, 
-						new HashSet<ArmRobot>()))) {
-						// If these configs can be connected and are not
-						// already connected, connect them.
-						G.get(state).add(neighbor);
-						G.get(neighbor).add(state);
-					}
+		for (ArmRobot state : G.keySet()) {
+			PriorityQueue<ArmRobot> KNN = getNearestNeighbors(state, G.keySet());
+			for (int i = 0; i < KNN.size(); i++) {
+				ArmRobot neighbor = KNN.poll();
+				if ((! w.armCollisionPath(new ArmRobot(NUM_ARM_LINKS), 
+					state.getConfig(), neighbor.getConfig())) && 
+					(! inSameComponent(G, state, neighbor))) {
+					// If these configs can be connected and are not
+					// already connected, connect them.
+					G.get(state).add(neighbor);
+					G.get(neighbor).add(state);
 				}
 			}
 		}
@@ -60,34 +58,36 @@ public class ArmPRM {
 	}
 	
 	public static boolean inSameComponent(HashMap<ArmRobot, ArrayList<ArmRobot>> G, 
-			ArmRobot a, ArmRobot b, HashSet<ArmRobot> visited) {
+			ArmRobot a, ArmRobot b) {
 		
-		// Depth first search
-		ArrayList<ArmRobot> neighborsOfA = G.get(a);
+		return (getBFSPath(G, a, b) != null);
 		
-		for (ArmRobot neighbor : neighborsOfA) {
-			if (! visited.contains(neighbor)) {
-				visited.add(neighbor);
-				if (neighbor == b || inSameComponent(G, neighbor, b, visited)) {
-					return true;
-				}
-			}
-		}
-		return false;
+//		// Depth first search
+//		ArrayList<ArmRobot> neighborsOfA = G.get(a);
+//		
+//		for (ArmRobot neighbor : neighborsOfA) {
+//			if (! visited.contains(neighbor)) {
+//				visited.add(neighbor);
+//				if (neighbor == b || inSameComponent(G, neighbor, b, visited)) {
+//					return true;
+//				}
+//			}
+//		}
+//		return false;
 	}
 	
 	public static PriorityQueue<ArmRobot> getNearestNeighbors(ArmRobot a, 
-			ArrayList<ArmRobot> neighbors) {
+			Set<ArmRobot> neighbors) {
 		PriorityQueue<ArmRobot> kNearest = new PriorityQueue<ArmRobot>(
 				new KNNComparator(a));
 		
 		// Start priority queue by adding first K nodes in graph
 		Iterator<ArmRobot> iter = neighbors.iterator();			
-		for (int i = 0; i < Math.min(neighbors.size(), K); i++) {
+		for (int i = 0; i < K; i++) {
 			ArmRobot n = iter.next();
 			if (! n.equals(a)) {
 				kNearest.add(n);
-			}
+			} else { i--; }
 		}
 		// For remaining nodes, add only if they are possibly one of the K
 		// shortest distances to the source node. (i.e. < max of our heap)
@@ -147,7 +147,7 @@ public class ArmPRM {
 	}
 	
 	// Generate samples for configuration space using random number generator
-	public static ArrayList<ArmRobot> getRandomConfigs(int links) {
+	public static ArrayList<ArmRobot> getRandomConfigs(int links, World w) {
 		// Store configurations used to ensure no duplicates
 		HashSet<ArmRobot> configsAdded = new HashSet<ArmRobot>();
 		Random rand = new Random();
@@ -159,7 +159,7 @@ public class ArmPRM {
 				newRobot.setLinkAngle(l, rand.nextDouble() * (2 * Math.PI));
 			}
 			
-			if (configsAdded.contains(newRobot)) {
+			if (configsAdded.contains(newRobot) || (w.armCollision(newRobot))) {
 				c--;	// don't count this one
 			} else {
 				randConfigs.add(newRobot);
@@ -202,15 +202,15 @@ public class ArmPRM {
 		ArmRobot current = goal;
 		while (prev.get(current) != start) {
 			// Use local planner to get subpath
-			if (distance(current, prev.get(current)) > TOL) {
-				appendLocalPath(path, current, prev.get(current));
-			}
+			//if (distance(current, prev.get(current)) > TOL) {
+			//	appendLocalPath(path, current, prev.get(current));
+			//}
 			path.addFirst(current);
 			current = prev.get(current);
 		}
-		if (distance(current, prev.get(current)) > TOL) {
-			appendLocalPath(path, current, prev.get(current));
-		}
+		//if (distance(current, prev.get(current)) > TOL) {
+		//	appendLocalPath(path, current, prev.get(current));
+		//}
 		path.addFirst(start);
 		return path;
 	}
@@ -218,9 +218,6 @@ public class ArmPRM {
 	public static void appendLocalPath(LinkedList<ArmRobot> path, 
 			ArmRobot a, ArmRobot b) {
 		double[] velocity = ArmLocalPlanner.getPath(a.getConfig(), b.getConfig());
-		System.out.println("a = " + a);
-		System.out.println("b = " + b);
-		System.out.println("Velocity: " + velocity[0]);
 		ArmRobot a1 = new ArmRobot(NUM_ARM_LINKS); // copy of a
 		a1.set(a.getConfig());
 		while (distance(a1, b) > TOL) {
