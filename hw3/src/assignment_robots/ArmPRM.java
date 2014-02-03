@@ -61,19 +61,6 @@ public class ArmPRM {
 			ArmRobot a, ArmRobot b) {
 		
 		return (getBFSPath(G, a, b) != null);
-		
-//		// Depth first search
-//		ArrayList<ArmRobot> neighborsOfA = G.get(a);
-//		
-//		for (ArmRobot neighbor : neighborsOfA) {
-//			if (! visited.contains(neighbor)) {
-//				visited.add(neighbor);
-//				if (neighbor == b || inSameComponent(G, neighbor, b, visited)) {
-//					return true;
-//				}
-//			}
-//		}
-//		return false;
 	}
 	
 	public static PriorityQueue<ArmRobot> getNearestNeighbors(ArmRobot a, 
@@ -200,7 +187,7 @@ public class ArmPRM {
 			HashMap<ArmRobot, ArmRobot> prev) {
 		LinkedList<ArmRobot> path = new LinkedList<ArmRobot>();
 		ArmRobot current = goal;
-		while (prev.get(current) != start) {
+		while (! prev.get(current).equals(start)) {
 			// Use local planner to get subpath
 			//if (distance(current, prev.get(current)) > TOL) {
 			//	appendLocalPath(path, current, prev.get(current));

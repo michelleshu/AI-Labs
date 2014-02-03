@@ -3,6 +3,7 @@ package assignment_robots;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Random;
 
@@ -14,26 +15,34 @@ public class CarRRT {
 	public static final double WINDOW_HEIGHT = 400;
 	public static final int NUM_RAND_SAMPLES = 300;
 	// Relative importance of angle compared to position in distance metric
-	public static final double THETA_WEIGHT = 50;
+	public static final double THETA_WEIGHT = 20;
 	// How close we require end of search to be to goal
-	public static final double TOL = 30;
+	public static final double TOL = 1;
 	
 	// Compute a RRT from start configuration to goal configuration
 	// Returns a predecessor HashMap containing path from start to goal
 	public static HashMap<CarRobot, CarRobot> buildRRT(World w, 
 			CarRobot start, CarRobot goal) {
+		HashMap<CarRobot, CarRobot> pred = new HashMap<CarRobot, CarRobot>();
 		CarRobot current = new CarRobot();
 		current.set(start.getCarState());
-		
+		while (distance(current, goal) > TOL) {
+			CarRobot succ = getBestSuccessorState(w, current, goal);
+			pred.put(succ, current);
+			current = succ;
+		}
+		pred.put(goal, current);
+		return pred;
 	}
 	
-	public CarRobot getBestSuccessorState(World w, CarRobot current, CarRobot goal) {
+	public static CarRobot getBestSuccessorState(World w, CarRobot current, 
+			CarRobot goal) {
 		CarRobot bestState = null;
 		double minDistance = Double.MAX_VALUE;
 		Random rand = new Random();
 		
 		for (int control = 0; control < 6; control++) {
-			double time = rand.nextDouble() * 10;
+			double time = rand.nextDouble();
 			if (! w.carCollisionPath(new CarRobot(), current.getCarState(), 
 					control, time)) {
 				CarState newState = SteeredCar.move(current.getCarState(), 
@@ -51,7 +60,7 @@ public class CarRRT {
 	}
 	
 	// Computes distance between two car states
-	private double distance(CarRobot a, CarRobot b) {
+	private static double distance(CarRobot a, CarRobot b) {
 		CarState sa = a.getCarState();
 		CarState sb = b.getCarState();
 		double distance = 0;
@@ -64,5 +73,35 @@ public class CarRRT {
 		double td = Math.abs(sb.getTheta() - sa.getTheta());
 		distance += THETA_WEIGHT * Math.min(td, (2 * Math.PI) - td);
 		return distance;
+	}
+	
+	private static LinkedList<CarRobot> backchain(CarRobot start, CarRobot goal,
+			HashMap<CarRobot, CarRobot> pred) {
+		LinkedList<CarRobot> path = new LinkedList<CarRobot>();
+		CarRobot current = goal;
+		while (! pred.get(current).equals(start)) {
+			path.addFirst(current);
+			current = pred.get(current);
+		}
+		path.addFirst(start);
+		return path;
+	}
+	
+	public static void main(String[] args) {
+		World w = new World();
+		CarRobot start = new CarRobot();
+		CarRobot goal = new CarRobot();
+		CarState ss = new CarState(1, 1, 0);
+		CarState gs = new CarState(20, 1, 0);
+		
+		start.set(ss);
+		goal.set(gs);
+		
+		HashMap<CarRobot, CarRobot> pred = buildRRT(w, start, goal);
+		System.out.println(pred.size());
+		LinkedList<CarRobot> path = backchain(start, goal, pred);
+		for (CarRobot r : path) {
+			System.out.println(r);
+		}
 	}
 }

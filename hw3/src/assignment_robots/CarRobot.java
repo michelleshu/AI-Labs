@@ -1,5 +1,7 @@
 package assignment_robots;
 
+import java.util.Arrays;
+
 // This class declares the class of a steered car;
 // Each car has a state, representing its current configuration; 
 // Each car has a initial configuration, set to be at origin with angle 0;
@@ -74,6 +76,26 @@ public class CarRobot {
 		path[i][2] = s.getTheta();
 		
 		return path;
+	}
+	
+	public String toString() {
+		StringBuffer sb = new StringBuffer("(");
+		CarState state = this.getCarState();
+		sb.append(state.getX() + ", " + state.getY() + ", " + state.getTheta());
+		sb.append(")");
+		return sb.toString();
+	}
+	
+	public int hashCode() {
+		return Arrays.hashCode(this.getCarState().get());
+	}
+	
+	public boolean equals(Object o) {
+		CarRobot other = (CarRobot) o;
+		CarState ts = this.getCarState();
+		CarState os = other.getCarState();
+		return ((ts.getX() == os.getX()) && (ts.getY() == os.getY()) &&
+				(ts.getTheta() == ts.getTheta()));
 	}
 
 }
