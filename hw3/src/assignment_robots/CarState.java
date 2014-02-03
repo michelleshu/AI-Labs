@@ -18,13 +18,22 @@ public class CarState {
 		s[0] = x;
 		s[1] = y;
 		s[2] = theta;
+		adjustTheta();
 	}
 
 	public void set(double x, double y, double theta) {
 		s[0] = x;
 		s[1] = y;
 		s[2] = theta;
-		
+		adjustTheta();
+	}
+	
+	// Don't let theta exceed 2PI
+	private void adjustTheta() {
+		s[2] = s[2] % (2 * Math.PI);
+		if (s[2] < 0.0) {
+			s[2] += 2 * Math.PI;
+		}
 	}
 
 	public double getX() {

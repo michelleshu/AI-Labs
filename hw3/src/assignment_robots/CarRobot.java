@@ -23,7 +23,9 @@ public class CarRobot {
 
 	// get the configuration of the current car;
 	public CarState getCarState() {
-		return s;
+		// Make a copy of the state
+		CarState state = new CarState(s.getX(), s.getY(), s.getTheta());
+		return state;
 	}
 	
 	// get the current car location and shape;
@@ -50,7 +52,6 @@ public class CarRobot {
 		int total = (int) Math.ceil(time/step);
 		double[][] path = new double[total+1][3];
 		
-		SteeredCar planner = new SteeredCar();
 		int i = 0;
 		CarState c = new CarState();
 		c.set(start.getX(), start.getY(), start.getTheta());
@@ -60,14 +61,14 @@ public class CarRobot {
 		path[0][2] = start.getTheta();
 		i = 1;
 		while (i < total) {
-			s = planner.move(c, ctrl, step);
+			s = SteeredCar.move(c, ctrl, step);
 			path[i][0] = s.getX();
 			path[i][1] = s.getY();
 			path[i][2] = s.getTheta();
 			c.set(s.getX(), s.getY(), s.getTheta());
 			i += 1;
 		}
-		s = planner.move(c, ctrl, time-step*(total-1));
+		s = SteeredCar.move(c, ctrl, time-step*(total-1));
 		path[i][0] = s.getX();
 		path[i][1] = s.getY();
 		path[i][2] = s.getTheta();

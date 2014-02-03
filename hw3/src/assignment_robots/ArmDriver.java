@@ -87,11 +87,10 @@ public class ArmDriver extends Application {
 		// creating polygon as obstacles;
 		
 
-		double a[][] = {{10, 400}, {150, 300}, {100, 210}};
+		double a[][] = {{40, 300}, {80, 300}, {80, 85}, {40, 85}};
 		Poly obstacle1 = new Poly(a);
 		
-		double b[][] = {{350, 30}, {300, 200}, {430, 125}};
-
+		double b[][] = {{220, 200}, {400, 200}, {400, 130}, {220, 130}};
 		Poly obstacle2 = new Poly(b);
 		
 		double c[][] = {{110, 220}, {250, 380}, {320, 220}};
@@ -105,45 +104,46 @@ public class ArmDriver extends Application {
 		
 		// Declaring a world; 
 		World w = new World();
-		// Add obstacles to the world;
+		// Add obstacles to the world
 		w.addObstacle(obstacle1);
 		w.addObstacle(obstacle2);
-		w.addObstacle(obstacle3);
 		w.addObstacle(bottom_border);
 		w.addObstacle(left_border);
 		
 		plotWorld(g, w);
 		
-		ArmRobot arm1 = new ArmRobot(2);
-		ArmRobot arm2 = new ArmRobot(2);
+		ArmRobot arm1 = new ArmRobot(3);
+		ArmRobot arm2 = new ArmRobot(3);
 		
-		double[] config1 = {0, 0};
-		double[] config2 = {0, 1};
+		double[] config1 = {0, 0, 0};
+		double[] config2 = {Math.PI/4, Math.PI/4, 0};
 		
 		arm1.set(config1);
 		arm2.set(config2);
 		
 		HashMap<ArmRobot, ArrayList<ArmRobot>> PRM = ArmPRM.buildPRM(w);
 		System.out.println(PRM.size());
+		for (ArmRobot r : PRM.keySet()) {
+			System.out.println(PRM.get(r).size());
+		}
 		
 		ArmRobot startNode = ArmPRM.getClosestPRMNode(PRM, arm1);
 		ArmRobot goalNode = ArmPRM.getClosestPRMNode(PRM, arm2);
 		
-		//LinkedList<ArmRobot> path1 = new LinkedList<ArmRobot>();
-		//path1.addFirst(arm1);
-		//ArmPRM.appendLocalPath(path1, arm1, startNode);
-		//path1.addFirst(startNode);
-		
-		//System.out.println(startNode);
-		//System.out.println(goalNode);
+		plotArmRobot(g, startNode, Color.BLUE);
+		plotArmRobot(g, goalNode, Color.BLUE);
 				
 		LinkedList<ArmRobot> path2 = ArmPRM.getBFSPath(PRM, startNode, goalNode);
+		if (path2 == null) {
+			System.out.println("No path found");
+			return;
+		}
 		
 		int intensity = 200;
 		for (ArmRobot r : path2) {
 			System.out.println(r);
-			plotArmRobot(g, r, Color.rgb(intensity, intensity, 255));
-			intensity -= 10;
+		plotArmRobot(g, r, Color.rgb(intensity, intensity, 255));
+			intensity -= 5;
 		}
 		
 		//plotArmRobot(g, startNode);

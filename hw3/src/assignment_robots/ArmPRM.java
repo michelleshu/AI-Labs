@@ -20,11 +20,11 @@ import assignment_robots.ArmRobot;
 
 public class ArmPRM {
 	
-	public static final int NUM_RAND_SAMPLES = 200; 
-	public static final int NUM_ARM_LINKS = 2;
+	public static final int NUM_RAND_SAMPLES = 500; 
+	public static final int NUM_ARM_LINKS = 3;
 	public static final double TOL = 0.2; // minimum acceptable distance
 										   // between two configs in path
-	public static final int K = 15; // # of nearest neighbors to explore
+	public static final int K = 100; // # of nearest neighbors to explore
 	
 	public static HashMap<ArmRobot, ArrayList<ArmRobot>> buildPRM(World w) {
 		// The graph G is represented as an adjacency list

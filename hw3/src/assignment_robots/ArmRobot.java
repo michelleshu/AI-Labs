@@ -1,5 +1,7 @@
 package assignment_robots;
 
+import java.util.Arrays;
+
 // This is my modified arm robot class.
 // The base of the arm is fixed at (0, 0). The length of each link in the arm 
 // is constant and fixed. A configuration of the arm consists of a sequence of
@@ -90,14 +92,15 @@ public class ArmRobot {
 	}
 	
 	public int hashCode() {
-		int base = 7;
-		int multiplier = 7;
-		int code = 0;
-		for (int i = 0; i < config.length; i++) {
-			code = (int) (code + multiplier * (config[i]));
-			multiplier = multiplier * base;
-		}
-		return code;
+		return Arrays.hashCode(config);
+//		int base = 7;
+//		int multiplier = 7;
+//		int code = 0;
+//		for (int i = 0; i < config.length; i++) {
+//			code = (int) (code + multiplier * (config[i]));
+//			multiplier = multiplier * base;
+//		}
+//		return code;
 	}
 	
 	public boolean equals(Object o) {

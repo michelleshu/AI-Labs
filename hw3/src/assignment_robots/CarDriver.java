@@ -69,8 +69,6 @@ public class CarDriver extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		
-		
-	
 		primaryStage.setTitle("CS 76 2D world");
 		Group root = new Group();
 		Scene scene = new Scene(root, window_width, window_height);

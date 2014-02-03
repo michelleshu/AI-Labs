@@ -9,10 +9,10 @@ package assignment_robots;
 class SteeredCar {
 
 	// The control set;
-	protected double[][] control = {{10, 0, 0}, {-10, 0, 0}, {10, 0, 10}, {10, 0, -10}, {-10, 0, 10}, {-10, 0, -10}};
+	protected static double[][] control = {{10, 0, 0}, {-10, 0, 0}, {10, 0, 10}, {10, 0, -10}, {-10, 0, 10}, {-10, 0, -10}};
 
 	// Get a control;
-	public double[] getControl(int i) {
+	public static double[] getControl(int i) {
 		double[] ctrl = new double[3];
 		ctrl[0] = control[i][0];
 		ctrl[1] = control[i][1];
@@ -22,7 +22,7 @@ class SteeredCar {
 	
 	// Main simulation, move from a CarState s, apply control C for time t;
 	// returned is a new CarState after the execution;
-	public CarState move(CarState s, int c, double t) {
+	public static CarState move(CarState s, int c, double t) {
 		CarState g = new CarState();
 
 		double[] ctrl = new double[3];
