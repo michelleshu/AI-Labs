@@ -8,7 +8,7 @@ import java.util.Arrays;
 // angles of each segment from the previous segment.
 
 public class ArmRobot {
-	protected final double BASE_X = 30;
+	protected final double BASE_X = 400;
 	protected final double BASE_Y = 30;
 	// Configuration: angles of links from one another
 	protected double[] config;

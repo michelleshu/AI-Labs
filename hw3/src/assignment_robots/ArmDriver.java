@@ -87,14 +87,20 @@ public class ArmDriver extends Application {
 		// creating polygon as obstacles;
 		
 
-		double a[][] = {{40, 300}, {80, 300}, {80, 85}, {40, 85}};
-		Poly obstacle1 = new Poly(a);
+		//double a[][] = {{40, 310}, {80, 310}, {80, 100}, {40, 100}};
+		//Poly obstacle1 = new Poly(a);
 		
-		double b[][] = {{220, 200}, {400, 200}, {400, 130}, {220, 130}};
-		Poly obstacle2 = new Poly(b);
+		//double b[][] = {{220, 190}, {400, 190}, {400, 150}, {220, 150}};
+		//Poly obstacle2 = new Poly(b);
 		
-		double c[][] = {{110, 220}, {250, 380}, {320, 220}};
+		double c[][] = {{290, 50}, {300, 120}, {370, 50}};
 		Poly obstacle3 = new Poly(c);
+		
+		double d[][] = {{370, 280}, {520, 280}, {460, 230}};
+		Poly obstacle4 = new Poly(d);
+		
+		double e[][] = {{200, 280}, {350, 280}, {260, 230}};
+		Poly obstacle5 = new Poly(e);
 		
 		double bb[][] = {{0, 0}, {0, 2}, {600, 2}, {600, 0}};
 		Poly bottom_border = new Poly(bb);
@@ -102,35 +108,41 @@ public class ArmDriver extends Application {
 		double lb[][] = {{0, 400}, {2, 400}, {2, 0}, {0, 0}};
 		Poly left_border = new Poly(lb);
 		
+		double rb[][] = {{598, 400}, {600, 400}, {600, 0}, {598, 0}};
+		Poly right_border = new Poly(rb);
+		
 		// Declaring a world; 
 		World w = new World();
 		// Add obstacles to the world
-		w.addObstacle(obstacle1);
-		w.addObstacle(obstacle2);
+		//w.addObstacle(obstacle1);
+		//w.addObstacle(obstacle2);
+		w.addObstacle(obstacle3);
+		w.addObstacle(obstacle4);
+		w.addObstacle(obstacle5);
 		w.addObstacle(bottom_border);
 		w.addObstacle(left_border);
+		w.addObstacle(right_border);
 		
 		plotWorld(g, w);
 		
 		ArmRobot arm1 = new ArmRobot(4);
 		ArmRobot arm2 = new ArmRobot(4);
 		
-		double[] config1 = {0, 0, 0, 0};
-		double[] config2 = {Math.PI/4, Math.PI/4, 0, 3/2*Math.PI };
+		double[] config1 = {Math.PI/3, Math.PI + 0.5, Math.PI - 0.5, Math.PI + 0.5};
+		double[] config2 = {2 * Math.PI/3, Math.PI/5, Math.PI/5, 0};
 		
 		arm1.set(config1);
 		arm2.set(config2);
 		
 		HashMap<ArmRobot, ArrayList<ArmRobot>> PRM = ArmPRM.buildPRM(w);
-		System.out.println(PRM.size());
-		for (ArmRobot r : PRM.keySet()) {
-			System.out.println(PRM.get(r).size());
-		}
+		
+		plotArmRobot(g, arm1, Color.WHITE);
+		plotArmRobot(g, arm2, Color.BLUE);
 		
 		ArmRobot startNode = ArmPRM.getClosestPRMNode(PRM, arm1);
 		ArmRobot goalNode = ArmPRM.getClosestPRMNode(PRM, arm2);
 		
-		plotArmRobot(g, startNode, Color.BLUE);
+		plotArmRobot(g, startNode, Color.WHITE);
 		plotArmRobot(g, goalNode, Color.BLUE);
 				
 		LinkedList<ArmRobot> path2 = ArmPRM.getBFSPath(PRM, startNode, goalNode);
@@ -143,16 +155,12 @@ public class ArmDriver extends Application {
 		for (ArmRobot r : path2) {
 			System.out.println(r);
 		plotArmRobot(g, r, Color.rgb(intensity, intensity, 255));
-			intensity -= 5;
+			intensity -= 10;
 			if (intensity < 1) {
 				intensity = 200;
 			}
 		}
-		
-		//plotArmRobot(g, startNode);
-		//plotArmRobot(g, goalNode);
-		
-		
+				
 	    scene.setRoot(g);
 	    primaryStage.show();
 	}

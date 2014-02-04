@@ -10,7 +10,7 @@ public class ArmLocalPlanner {
 	
 	public static enum Direction { CW, CCW };
 	
-	// Get the most efficient direction of rotation not going through obstacle
+	// Get shortest directions of rotation
 	public static Direction[] getDirections(double[] config1, double[] config2) {
 		Direction[] directions = new Direction[config1.length];
 		double diffCW, diffCCW;
