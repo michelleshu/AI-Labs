@@ -112,11 +112,11 @@ public class ArmDriver extends Application {
 		
 		plotWorld(g, w);
 		
-		ArmRobot arm1 = new ArmRobot(3);
-		ArmRobot arm2 = new ArmRobot(3);
+		ArmRobot arm1 = new ArmRobot(4);
+		ArmRobot arm2 = new ArmRobot(4);
 		
-		double[] config1 = {0, 0, 0};
-		double[] config2 = {Math.PI/4, Math.PI/4, 0};
+		double[] config1 = {0, 0, 0, 0};
+		double[] config2 = {Math.PI/4, Math.PI/4, 0, 3/2*Math.PI };
 		
 		arm1.set(config1);
 		arm2.set(config2);
@@ -144,6 +144,9 @@ public class ArmDriver extends Application {
 			System.out.println(r);
 		plotArmRobot(g, r, Color.rgb(intensity, intensity, 255));
 			intensity -= 5;
+			if (intensity < 1) {
+				intensity = 200;
+			}
 		}
 		
 		//plotArmRobot(g, startNode);

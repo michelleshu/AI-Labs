@@ -20,11 +20,11 @@ import assignment_robots.ArmRobot;
 
 public class ArmPRM {
 	
-	public static final int NUM_RAND_SAMPLES = 500; 
-	public static final int NUM_ARM_LINKS = 3;
-	public static final double TOL = 0.2; // minimum acceptable distance
-										   // between two configs in path
-	public static final int K = 100; // # of nearest neighbors to explore
+	public static final int NUM_RAND_SAMPLES = 200; 
+	public static final int NUM_ARM_LINKS = 4;
+	public static final int K = 15; // # of nearest neighbors to explore
+	public static final double TOL = 0.2; // maximum acceptable distance
+	  // between two configs in path
 	
 	public static HashMap<ArmRobot, ArrayList<ArmRobot>> buildPRM(World w) {
 		// The graph G is represented as an adjacency list
@@ -48,6 +48,7 @@ public class ArmPRM {
 					(! inSameComponent(G, state, neighbor))) {
 					// If these configs can be connected and are not
 					// already connected, connect them.
+					
 					G.get(state).add(neighbor);
 					G.get(neighbor).add(state);
 				}
@@ -190,7 +191,11 @@ public class ArmPRM {
 		while (! prev.get(current).equals(start)) {
 			// Use local planner to get subpath
 			//if (distance(current, prev.get(current)) > TOL) {
-			//	appendLocalPath(path, current, prev.get(current));
+			//	LinkedList<ArmRobot> localPath = 
+			//			ArmLocalPlanner.getLocalPath(current, prev.get(current));
+			//	for (int i = 0; i < localPath.size(); i++) {
+			//		path.addFirst(localPath.removeFirst());
+			//	}
 			//}
 			path.addFirst(current);
 			current = prev.get(current);
@@ -202,24 +207,10 @@ public class ArmPRM {
 		return path;
 	}
 	
-	public static void appendLocalPath(LinkedList<ArmRobot> path, 
-			ArmRobot a, ArmRobot b) {
-		double[] velocity = ArmLocalPlanner.getPath(a.getConfig(), b.getConfig());
-		ArmRobot a1 = new ArmRobot(NUM_ARM_LINKS); // copy of a
-		a1.set(a.getConfig());
-		while (distance(a1, b) > TOL) {
-			ArmRobot r = new ArmRobot(NUM_ARM_LINKS);
-			r.set(a1.getConfig());
-			path.addFirst(r);
-			for (int dim = 0; dim < a.config.length; dim++) {
-				a1.config[dim] += velocity[dim];
-			}
-		}
-	}
-	
 	public static void main(String[] args) {
-//		World w = new World();
-//		HashMap<ArmRobot, ArrayList<ArmRobot>> PRM = buildPRM(w);
+		World w = new World();
+		HashMap<ArmRobot, ArrayList<ArmRobot>> PRM = buildPRM(w);
+		
 //		System.out.println("All configs: ");
 //		for (ArmRobot r : PRM.keySet()) {
 //			System.out.println(r);

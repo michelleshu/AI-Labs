@@ -13,9 +13,8 @@ public class CarRRT {
 	
 	public static final double WINDOW_WIDTH = 600;
 	public static final double WINDOW_HEIGHT = 400;
-	public static final int NUM_RAND_SAMPLES = 300;
 	// Relative importance of angle compared to position in distance metric
-	public static final double THETA_WEIGHT = 20;
+	public static final double THETA_WEIGHT = 5;
 	// How close we require end of search to be to goal
 	public static final double TOL = 10;
 	

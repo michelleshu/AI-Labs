@@ -1,6 +1,8 @@
 package assignment_robots;
 
 import java.util.ArrayList;
+import assignment_robots.ArmLocalPlanner;
+import assignment_robots.ArmLocalPlanner.Direction;
 
 // This class declares the world;
 // Contains a list of polygon obstacles;
@@ -107,8 +109,9 @@ public class World {
 		
 		double[] config = new double[config1.length];
 		
-		double time = ArmLocalPlanner.moveInParallel(config1, config2);
-		double[] path = ArmLocalPlanner.getPath(config1, config2);
+		Direction[] dir = ArmLocalPlanner.getDirections(config1, config2);
+		double time = ArmLocalPlanner.getTime(config1, config2, dir);
+		double[] path = ArmLocalPlanner.getVelocity(config1, config2, dir);
 		double step = 0.5;
 		for (int i = 0; i < config1.length; i++) {
 			config[i] = config1[i];
