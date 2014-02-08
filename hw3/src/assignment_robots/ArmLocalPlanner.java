@@ -84,10 +84,6 @@ public class ArmLocalPlanner {
 		Direction[] dir = getDirections(a.getConfig(), b.getConfig());
 		double[] velocity = getVelocity(a.getConfig(), b.getConfig(), dir);
 		
-		//System.out.println(dir[0] + ", " + dir[1]);
-		//System.out.println(velocity[0] + ", " + velocity[1]);
-		//System.out.println();
-		
 		LinkedList<ArmRobot> localPath = new LinkedList<ArmRobot>();
 		ArmRobot current = new ArmRobot(a.getLinks());
 		current.set(a.getConfig());

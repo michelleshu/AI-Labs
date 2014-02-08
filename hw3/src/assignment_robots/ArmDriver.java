@@ -116,9 +116,9 @@ public class ArmDriver extends Application {
 		// Add obstacles to the world
 		//w.addObstacle(obstacle1);
 		//w.addObstacle(obstacle2);
-		w.addObstacle(obstacle3);
-		w.addObstacle(obstacle4);
-		w.addObstacle(obstacle5);
+		//w.addObstacle(obstacle3);
+		//w.addObstacle(obstacle4);
+		//w.addObstacle(obstacle5);
 		w.addObstacle(bottom_border);
 		w.addObstacle(left_border);
 		w.addObstacle(right_border);

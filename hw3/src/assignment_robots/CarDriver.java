@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Line;
 import javafx.scene.Group;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
@@ -25,7 +26,7 @@ public class CarDriver extends Application {
 	}
 	
 	// plot a car robot
-	public void plotCarRobot(Group g, CarRobot car, CarState s) {
+	public void plotCarRobot(Group g, CarRobot car, CarState s, Color c) {
 		//System.out.println(car);
 		//System.out.println(s);
 		car.set(s);
@@ -41,7 +42,7 @@ public class CarDriver extends Application {
 		p.getPoints().addAll(to_add);
 		
 		p.setStroke(Color.RED);
-		p.setFill(Color.PINK);
+		p.setFill(c);
 		g.getChildren().add(p);
 	}
 		
@@ -80,48 +81,85 @@ public class CarDriver extends Application {
 		
 		Group g = new Group();
 		
-		double a[][] = {{10, 400}, {150, 300}, {100, 210}};
-		Poly obstacle1 = new Poly(a);
+		//double a[][] = {{10, 400}, {150, 300}, {100, 210}};
+		//Poly obstacle1 = new Poly(a);
 		
-		double b[][] = {{350, 30}, {300, 200}, {430, 125}};
-
-		Poly obstacle2 = new Poly(b);
-
+		//double b[][] = {{350, 10}, {400, 300}, {430, 100}};
+		//Poly obstacle2 = new Poly(b);
 		
-		double c[][] = {{110, 220}, {250, 380}, {320, 220}};
+		double c[][] = {{110, 220}, {120, 380}, {300, 380}, {320, 220}};
 		Poly obstacle3 = new Poly(c);
 		
-		double d[][] = {{0, 50}, {250, 50}, {250, 0}, {0, 0}};
+		double d[][] = {{10, 150}, {150, 150}, {150, 100}, {0, 100}};
 		Poly obstacle4 = new Poly(d);
 		
-		double e[][] = {{300, 30}, {500, 30}, {500, 0}, {300, 0}};
+		double e[][] = {{300, 120}, {500, 120}, {500, 0}, {300, 0}};
 		Poly obstacle5 = new Poly(e);
+		
+		double f[][] = {{0, 400}, {1, 400}, {1, 0}, {0, 0}};
+		Poly obstacle6 = new Poly(f);
 		
 		// Declaring a world; 
 		World w = new World();
 		// Add obstacles to the world;
 		//w.addObstacle(obstacle1);
 		//w.addObstacle(obstacle2);
-		//w.addObstacle(obstacle3);
-		//w.addObstacle(obstacle4);
-		//w.addObstacle(obstacle5);
+		w.addObstacle(obstacle3);
+		w.addObstacle(obstacle4);
+		w.addObstacle(obstacle5);
+		w.addObstacle(obstacle6);
 			
 		plotWorld(g, w);
 		
 		CarRobot start = new CarRobot();
 		CarRobot goal = new CarRobot();
-		CarState ss = new CarState(0, 0, 0);
-		CarState gs = new CarState(200, 300, 2);
+		CarState ss = new CarState(100, 20, 0);
+		CarState gs = new CarState(50, 330, Math.PI/2);
 		
 		start.set(ss);
 		goal.set(gs);
 		
+		plotCarRobot(g, start, start.getCarState(), Color.PINK);
+		plotCarRobot(g, goal, goal.getCarState(), Color.PINK);
+		
 		HashMap<CarRobot, CarRobot> pred = CarRRT.buildRRT(w, start, goal);
 		LinkedList<CarRobot> path = CarRRT.backchain(start, goal, pred);
 		
-		for (CarRobot car : path) {
-			plotCarRobot(g, car, car.getCarState());
+		int intensity = 250;
+		
+		CarRobot prev = path.get(0);
+		plotCarRobot(g, prev, prev.getCarState(), Color.rgb(255, intensity, intensity));
+		for (int i = 1; i < path.size(); i++) {
+			CarRobot car = path.get(i);
+			System.out.println(car);
+			Line l = new Line();
+			l.setStartX(prev.getCarState().getX());
+			l.setStartY(400 - prev.getCarState().getY());
+			l.setEndX(car.getCarState().getX());
+			l.setEndY(400 - car.getCarState().getY());
+			l.setStroke(Color.BLACK);
+			g.getChildren().add(l);
+			plotCarRobot(g, car, car.getCarState(), Color.rgb(255, intensity, intensity));
+			intensity -= 3;
+			if (intensity < 1) {
+				intensity = 200;
+			}
+			prev = car;
 		}
+		
+//		for (CarRobot car : path) {
+//			plotCarRobot(g, car, car.getCarState());
+//		}
+		
+//		int intensity = 200;
+//		for (ArmRobot r : path2) {
+//			System.out.println(r);
+//		plotArmRobot(g, r, Color.rgb(intensity, intensity, 255));
+//			intensity -= 10;
+//			if (intensity < 1) {
+//				intensity = 200;
+//			}
+//		}
 		
 	    scene.setRoot(g);
 	    primaryStage.show();
