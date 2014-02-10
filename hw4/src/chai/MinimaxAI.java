@@ -18,12 +18,20 @@ public class MinimaxAI implements ChessAI {
 	
 	// Get the move from this position that will lead to the maximum utility
 	public short getMove(Position position) {
-		System.out.println("Position before getMove: " + position);
-		double maxValue = Double.MAX_VALUE;
-		for (short m : position.getAllMoves()) {
+		System.out.println("Called on " + maxDepth + "!");
+		if (position.isTerminal()) {
+			return -1;
+		}
+		
+		double maxValue = Double.MIN_VALUE;
+		double value;
+
+		short[] moves = position.getAllMoves();
+		for (int i = 0; i < moves.length; i++) {
+			short m = moves[i];
 			try {
 				position.doMove(m);
-				double value = minValue(position, 0);
+				value = minValue(position, 0);
 				if (value > maxValue) {
 					maxValue = value;
 					bestMove = m;
@@ -33,8 +41,7 @@ public class MinimaxAI implements ChessAI {
 				System.out.println("Tried illegal move in minimax.");
 			}
 		}
-		System.out.println("Position after getMove: " + position);
-		System.out.println("Best move chosen: " + bestMove);
+		System.out.println("Got best move");
 		return bestMove;
 	}
 	
@@ -44,7 +51,9 @@ public class MinimaxAI implements ChessAI {
 			return utility(position);
 		}
 		double maxValue = Double.MIN_VALUE;
-		for (short m : position.getAllMoves()) {
+		short[] moves = position.getAllMoves();
+		for (int i = 0; i < moves.length; i++) {
+			short m = moves[i];
 			try {
 				position.doMove(m);
 				maxValue = Math.max(maxValue, minValue(position, depth + 1));
@@ -63,7 +72,9 @@ public class MinimaxAI implements ChessAI {
 			return utility(position);
 		}
 		double minValue = Double.MAX_VALUE;
-		for (short m: position.getAllMoves()) {
+		short[] moves = position.getAllMoves();
+		for (int i = 0; i < moves.length; i++) {
+			short m = moves[i];
 			try {
 				position.doMove(m);
 				minValue = Math.min(minValue, maxValue(position, depth + 1));

@@ -12,13 +12,10 @@ public class AIMoveTask extends Task<Short> {
 		super();
 		position = p;	
 		this.ai = ai;
-		
 	}
 
 	@Override
 	protected Short call() throws Exception {
 		return ai.getMove(position);
-	
 	}
-	
 }

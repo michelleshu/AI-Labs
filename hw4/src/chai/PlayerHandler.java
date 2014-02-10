@@ -50,7 +50,7 @@ public class PlayerHandler extends Thread {
 				
 				clientInput = (String) objectIn.readObject();
 				
-				System.out.println("received: " + clientInput);
+				//System.out.println("received: " + clientInput);
 				//out.println(clientInput);
 				//out.flush();
 				

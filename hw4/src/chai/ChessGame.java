@@ -32,8 +32,8 @@ public class ChessGame {
 		for(short m: position.getAllMoves()) {
 			if(m == move) return true;
 		}
-		System.out.println(java.util.Arrays.toString(position.getAllMoves()));
-		System.out.println(move);
+		//System.out.println(java.util.Arrays.toString(position.getAllMoves()));
+		//System.out.println(move);
 		return false;
 	
 	}
@@ -51,10 +51,9 @@ public class ChessGame {
 	
 	public void doMove(short move) {
 		try {
-
-			System.out.println("making move " + move);
+			//System.out.println("making move " + move);
 			position.doMove(move);
-			System.out.println(position);
+			//System.out.println(position);
 			if (position.isCheck()) {
 				System.out.println("Check!");
 			}
@@ -67,14 +66,14 @@ public class ChessGame {
 	}
 
 	public static void main(String[] args) {
-		System.out.println();
+		//System.out.println();
 
 		// Create a starting position using "Forsyth–Edwards Notation". (See
 		// Wikipedia.)
 		Position position = new Position(
 				"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
-		System.out.println(position);
+		//System.out.println(position);
 
 	}
 	

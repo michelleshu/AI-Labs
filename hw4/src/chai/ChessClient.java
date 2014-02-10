@@ -73,8 +73,8 @@ public class ChessClient extends Application {
 		// Movemakers handle getting input from an AI, from the keyboard, or
 		// from a server, depending on which type is used.
 		moveMaker = new MoveMaker[2];
-		moveMaker[Chess.BLACK] = new AIMoveMaker(new RandomAI());
-		moveMaker[Chess.WHITE] = new AIMoveMaker(new MinimaxAI(3));
+		moveMaker[Chess.BLACK] = new AIMoveMaker(new MinimaxAI(4));
+		moveMaker[Chess.WHITE] = new AIMoveMaker(new MinimaxAI(2));
 		//moveMaker[Chess.WHITE] = new TextFieldMoveMaker();
 
 		VBox vb = new VBox();
@@ -89,12 +89,12 @@ public class ChessClient extends Application {
 		primaryStage.show();
 
 		// sets the game world's game loop (Timeline)
-		Timeline timeline = new Timeline(1.0);
+		Timeline timeline = new Timeline(0.1);
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		timeline.getKeyFrames().add(
-				new KeyFrame(Duration.seconds(.05), new GameHandler()));
+				new KeyFrame(Duration.seconds(10), new GameHandler()));
 		timeline.playFromStart();
-		timeline.playFromStart();
+		//timeline.playFromStart();
 
 		// moveMaker = new AIMoveMaker(new RandomAI());
 
@@ -102,7 +102,6 @@ public class ChessClient extends Application {
 
 	private void log(String logText) {
 		logArea.appendText(logText + "\n");
-		
 	}
 	
 	// As time passes, handle the state of the game
@@ -122,8 +121,10 @@ public class ChessClient extends Application {
 			} else if (mover.getState() == Worker.State.SUCCEEDED
 					&& boardView.ready()) {
 				short move = mover.getMove();
-				boardView.doMove(move);
-				mover.reset();
+				if (move != -1) {
+					boardView.doMove(move);
+					mover.reset();
+				}
 			}
 
 			// System.out.println("activeMoveSource state " +

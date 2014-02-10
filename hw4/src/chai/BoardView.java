@@ -130,6 +130,11 @@ public class BoardView extends Group {
 	}
 
 	public boolean doMove(short move) {
+		if (move == -1) {
+			System.out.println("Game over.");
+			return false;
+		}
+		
 		// bail out if the move isn't legal
 		if (move == 0) {
 			System.out.println("Illegal move attempted.");
@@ -168,12 +173,21 @@ public class BoardView extends Group {
 			int dx = -2;    // short castle
 			int rookx = 7;
 			
+			int toRookSqi = 5;
+			int fromRookSqi = 7;
+			
 			if(Move.isLongCastle(move)) {
-				dx = -2;
+				dx = 3;
 				rookx = 0;
+				
+				toRookSqi = 3;
+				fromRookSqi = 0;
 			}
 			Label rook = pieceLabels[Chess.coorToSqi(rookx, r1)];
 			animateMove(rook, dx, 0);
+			
+			pieceLabels[toRookSqi] = pieceLabels[fromRookSqi];
+			pieceLabels[fromRookSqi] = null;
 		}
 		
 		// update the list of piece Labels
