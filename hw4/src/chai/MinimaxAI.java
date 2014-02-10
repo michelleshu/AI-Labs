@@ -10,15 +10,16 @@ import chesspresso.position.Position;
 
 public class MinimaxAI implements ChessAI {
 	private int maxDepth;
+	private int color;
 	private short bestMove = Move.NO_MOVE;
 	
-	public MinimaxAI(int maxd) {
+	public MinimaxAI(int c, int maxd) {
+		this.color = c; 		// color of this player
 		this.maxDepth = maxd;
 	}
 	
 	// Get the move from this position that will lead to the maximum utility
 	public short getMove(Position position) {
-		System.out.println("Called on " + maxDepth + "!");
 		if (position.isTerminal()) {
 			return -1;
 		}
@@ -41,7 +42,7 @@ public class MinimaxAI implements ChessAI {
 				System.out.println("Tried illegal move in minimax.");
 			}
 		}
-		System.out.println("Got best move");
+		System.out.println(utility(position));
 		return bestMove;
 	}
 	
@@ -89,11 +90,16 @@ public class MinimaxAI implements ChessAI {
 	
 	// Get utility value of current position
 	private double utility(Position position) {
-		if (position.isMate()) {
-			return Double.MAX_VALUE;
+		if (position.isTerminal() && position.isMate()) {
+			if (position.getToPlay() == this.color) {
+				// I lose b/c opponent just checkmated me
+				return Double.MIN_VALUE;
+			} else {	// I win!
+				return Double.MAX_VALUE;
+			}
 		} else {
 			Random rand = new Random();
-			return rand.nextDouble() * Double.MAX_VALUE;
+			return rand.nextDouble() * 1E100;
 		}
 	}
 	

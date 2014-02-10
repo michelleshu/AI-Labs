@@ -73,8 +73,8 @@ public class ChessClient extends Application {
 		// Movemakers handle getting input from an AI, from the keyboard, or
 		// from a server, depending on which type is used.
 		moveMaker = new MoveMaker[2];
-		moveMaker[Chess.BLACK] = new AIMoveMaker(new MinimaxAI(4));
-		moveMaker[Chess.WHITE] = new AIMoveMaker(new MinimaxAI(2));
+		moveMaker[Chess.WHITE] = new AIMoveMaker(new MinimaxAI(Chess.WHITE, 3));
+		moveMaker[Chess.BLACK] = new AIMoveMaker(new MinimaxAI(Chess.BLACK, 3));
 		//moveMaker[Chess.WHITE] = new TextFieldMoveMaker();
 
 		VBox vb = new VBox();
@@ -89,10 +89,10 @@ public class ChessClient extends Application {
 		primaryStage.show();
 
 		// sets the game world's game loop (Timeline)
-		Timeline timeline = new Timeline(0.1);
+		Timeline timeline = new Timeline(1.0);
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		timeline.getKeyFrames().add(
-				new KeyFrame(Duration.seconds(10), new GameHandler()));
+				new KeyFrame(Duration.seconds(0.05), new GameHandler()));
 		timeline.playFromStart();
 		//timeline.playFromStart();
 
@@ -206,10 +206,11 @@ public class ChessClient extends Application {
 
 		public Worker.State getState() {
 			// short circuit if moveTask hasn't been initalized
-
 			if (moveTask == null)
 				return Worker.State.READY;
-			return moveTask.getState();
+			if (moveTask.getState() == Worker.State.SUCCEEDED)
+				return Worker.State.SUCCEEDED;
+			return Worker.State.RUNNING;
 
 		}
 
