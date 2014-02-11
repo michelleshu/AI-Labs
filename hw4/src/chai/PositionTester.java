@@ -28,6 +28,7 @@ public class PositionTester {
 		System.out.println(positionA.canMove());
 		System.out.println(positionA.getToPlay());
 		System.out.println(utility(positionA));
-		System.out.println(Double.MIN_VALUE);
+		System.out.println(- Integer.MAX_VALUE);
+		System.out.println(- (Integer.MAX_VALUE - 1));
 	}
 }
