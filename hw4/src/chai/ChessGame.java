@@ -15,6 +15,12 @@ public class ChessGame {
 	public ChessGame() {
 		position = new Position(
 				"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+		
+		// Endgame position
+		//position = new Position("k2b4/2pp4/1Q6/7r/5Bq1/5pP1/PP3P1P/4nRK1 b - - 0 1");
+		
+		// Error positions
+		//position = new Position("8/7k/P6P/2P3Q1/8/4K3/8/8 b - - 0 116");
 
 	}
 
