@@ -5,6 +5,7 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.concurrent.Worker.State;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -73,10 +74,10 @@ public class ChessClient extends Application {
 		// Movemakers handle getting input from an AI, from the keyboard, or
 		// from a server, depending on which type is used.
 		moveMaker = new MoveMaker[2];
-		moveMaker[Chess.WHITE] = new AIMoveMaker(new MinimaxAI(Chess.WHITE, 1));
-		moveMaker[Chess.BLACK] = new AIMoveMaker(new MinimaxAI(Chess.BLACK, 4));
+		moveMaker[Chess.WHITE] = new AIMoveMaker(new MinimaxAI(Chess.WHITE, 6));
+		//moveMaker[Chess.BLACK] = new AIMoveMaker(new MinimaxAI(Chess.BLACK, 2));
 		//moveMaker[Chess.WHITE] = new TextFieldMoveMaker();
-		//moveMaker[Chess.BLACK] = new TextFieldMoveMaker();
+		moveMaker[Chess.BLACK] = new TextFieldMoveMaker();
 
 		VBox vb = new VBox();
 		vb.getChildren().addAll(boardView, logArea, commandField);
@@ -201,7 +202,13 @@ public class ChessClient extends Application {
 		}
 
 		public void start(Position position) {
-			moveTask = new AIMoveTask(ai, position);
+			moveTask = new AIMoveTask(ai, new Position(position));
+			moveTask.setOnFailed(new EventHandler<WorkerStateEvent>() {
+				@Override
+				public void handle(WorkerStateEvent event) {
+					event.getSource().getException().printStackTrace();
+				}
+			});
 			new Thread(moveTask).start();
 		}
 

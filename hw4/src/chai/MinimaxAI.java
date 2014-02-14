@@ -12,7 +12,9 @@ import chesspresso.position.Position;
 public class MinimaxAI implements ChessAI {
 	private int finalDepth;	// absolute max depth to explore, return after this
 	private int color;
-	private short bestMove = Move.NO_MOVE;
+	private short bestMove;
+	private int bestMoveValue;
+	private int nodesExplored = 0;
 	private Random rand = new Random();
 	
 	public MinimaxAI(int c, int fd) {
@@ -21,38 +23,41 @@ public class MinimaxAI implements ChessAI {
 	}
 	
 	public short getMove(Position position) {
+		// Reset bestMove and bestMoveValue
+		bestMove = Move.NO_MOVE;
+		bestMoveValue = - Integer.MAX_VALUE;
+		
+		if (position.isTerminal()) { return Move.NO_MOVE; }	// Game over
 		for (int cutoffDepth = 1; cutoffDepth <= this.finalDepth; cutoffDepth++) {
-			this.bestMove = getMoveAtDepth(position, cutoffDepth);
+			getMoveAtDepth(position, cutoffDepth);
 			// If timer runs out before we explore at finalDepth, return the
 			// best value we have found in allotted time.
 		}
-		return this.bestMove;
+		System.out.println("Nodes explored: " + nodesExplored);
+		return bestMove;
 	}
 	 
 	// Get the move from this position that will lead to the maximum utility
-	private short getMoveAtDepth(Position position, int cutoffDepth) {
-		if (position.isTerminal()) { return -1;	} // Game over
-		
-		short bestMoveAtDepth = Move.NO_MOVE;
-		int maxValue = - Integer.MAX_VALUE;
+	private void getMoveAtDepth(Position position, int cutoffDepth) {
 		int value;
-
 		short[] moves = position.getAllMoves();
 		for (int i = 0; i < moves.length; i++) {
 			short m = moves[i];
 			try {
 				position.doMove(m);
 				value = minValue(position, 1, cutoffDepth);
-				if (value > maxValue) {
-					maxValue = value;
-					bestMoveAtDepth = m;
+				
+				if (value > bestMoveValue) {
+					bestMove = m;
+					bestMoveValue = value;
 				}
 				position.undoMove();
 			} catch(IllegalMoveException e) {
 				System.out.println("Tried illegal move in minimax.");
 			}
 		}
-		return bestMoveAtDepth;
+		System.out.println("Best move found at depth " + cutoffDepth + 
+				" has value " + bestMoveValue);
 	}
 	
 	// Return maximum utility value from this position forward
@@ -99,6 +104,7 @@ public class MinimaxAI implements ChessAI {
 	
 	// Get utility value of current position
 	private int utility(Position position) {
+		nodesExplored++;
 		if (position.isTerminal()) {
 			if (position.isMate()) {
 				if (position.getToPlay() == this.color) {
@@ -111,7 +117,7 @@ public class MinimaxAI implements ChessAI {
 				return 0;
 			}
 		} else {
-			return rand.nextInt(Integer.MAX_VALUE / 2) - Integer.MAX_VALUE;
+			return rand.nextInt(Integer.MAX_VALUE) - (Integer.MAX_VALUE / 2);
 		}
 	}
 	

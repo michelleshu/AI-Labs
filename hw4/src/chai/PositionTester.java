@@ -22,13 +22,18 @@ public class PositionTester {
 	}
 	
 	public static void main(String[] args) {
-		Position positionA = new Position("4k3/4Q3/5K2/8/8/8/8/8 b - - 0 1");
-		System.out.println(positionA.isTerminal());
-		System.out.println(positionA.isMate());
-		System.out.println(positionA.canMove());
-		System.out.println(positionA.getToPlay());
-		System.out.println(utility(positionA));
-		System.out.println(- Integer.MAX_VALUE);
-		System.out.println(- (Integer.MAX_VALUE - 1));
+		//Position positionA = new Position("4k3/4Q3/5K2/8/8/8/8/8 b - - 0 1");
+		//System.out.println(positionA.isTerminal());
+//		System.out.println(positionA.isMate());
+//		System.out.println(positionA.canMove());
+//		System.out.println(positionA.getToPlay());
+//		System.out.println(utility(positionA));
+//		System.out.println(- Integer.MAX_VALUE);
+//		System.out.println(- (Integer.MAX_VALUE - 1));
+		
+		Random rand = new Random();
+		for (int i = 0; i < 50; i++) {
+			System.out.println(rand.nextInt(Integer.MAX_VALUE) - (Integer.MAX_VALUE / 2));
+		}
 	}
 }

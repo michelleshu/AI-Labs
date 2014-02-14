@@ -16,8 +16,15 @@ public class ChessGame {
 		position = new Position(
 				"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 		
-		// Endgame position
+		// Mate in 1
 		//position = new Position("k2b4/2pp4/1Q6/7r/5Bq1/5pP1/PP3P1P/4nRK1 b - - 0 1");
+		
+		// Mate in 2
+		//position = new Position("r5r1/7Q/2RNbkN1/5pp1/p7/3q4/PP3PPP/4R1K1 w - - 0 1");
+		
+		// Mate in 3
+		//position = new Position(
+		//		"r4k2/pppb1Pp1/2np3p/2b5/2B2Bnq/2N5/PP2Q1PP/4RR1K w - - 0 1");
 		
 		// Error positions
 		//position = new Position("8/7k/P6P/2P3Q1/8/4K3/8/8 b - - 0 116");
@@ -65,6 +72,9 @@ public class ChessGame {
 			}
 			if (position.isMate()) {
 				System.out.println("Checkmate!");
+			}
+			if (position.isStaleMate()) {
+				System.out.println("Stalemate!");
 			}
 		} catch (IllegalMoveException e) {
 			System.out.println("illegal move!");
