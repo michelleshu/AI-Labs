@@ -33,7 +33,7 @@ public class MinimaxAI implements ChessAI {
 			// If timer runs out before we explore at finalDepth, return the
 			// best value we have found in allotted time.
 		}
-		System.out.println("Nodes explored: " + nodesExplored);
+		//System.out.println("Nodes explored: " + nodesExplored);
 		return bestMove;
 	}
 	 
@@ -117,7 +117,8 @@ public class MinimaxAI implements ChessAI {
 				return 0;
 			}
 		} else {
-			return rand.nextInt(Integer.MAX_VALUE) - (Integer.MAX_VALUE / 2);
+			//return rand.nextInt(Integer.MAX_VALUE) - (Integer.MAX_VALUE / 2);
+			return EvaluationFunction.getMaterialUtility(position, this.color);
 		}
 	}
 	

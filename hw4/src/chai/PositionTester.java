@@ -30,10 +30,5 @@ public class PositionTester {
 //		System.out.println(utility(positionA));
 //		System.out.println(- Integer.MAX_VALUE);
 //		System.out.println(- (Integer.MAX_VALUE - 1));
-		
-		Random rand = new Random();
-		for (int i = 0; i < 50; i++) {
-			System.out.println(rand.nextInt(Integer.MAX_VALUE) - (Integer.MAX_VALUE / 2));
-		}
 	}
 }

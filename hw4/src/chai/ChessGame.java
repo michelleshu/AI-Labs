@@ -16,6 +16,12 @@ public class ChessGame {
 		position = new Position(
 				"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 		
+//		for (int row = 0; row < 8; row++) {
+//			for (int col = 0; col < 8; col++) {
+//				System.out.println(getStone(col, row));
+//			}
+//		}
+		
 		// Mate in 1
 		//position = new Position("k2b4/2pp4/1Q6/7r/5Bq1/5pP1/PP3P1P/4nRK1 b - - 0 1");
 		
