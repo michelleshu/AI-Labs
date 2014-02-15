@@ -9,8 +9,8 @@ public class EvaluationFunction {
 	// Material evaluation function
 	public static int getMaterialUtility(Position position, int color) {
 		// Count differences in number of pieces on board (black - white)
-		int pawnd, knightd, bishopd, rookd, queend, stone;
-		pawnd = knightd = bishopd = rookd = queend = 0;
+		int pawnd, knightd, bishopd, rookd, queend, kingd, stone;
+		pawnd = knightd = bishopd = rookd = queend = kingd = 0;
 		for (int col = 0; col < 8; col++) {
 			for (int row = 0; row < 8; row++) {
 				stone = position.getStone(Chess.coorToSqi(col, row));
@@ -35,6 +35,10 @@ public class EvaluationFunction {
 						break;
 					case -5 : pawnd--;
 						break;
+					case 6 : kingd++;
+						break;
+					case -6 : kingd--;
+						break;
 					default : break;
 				}
 			}
@@ -43,10 +47,15 @@ public class EvaluationFunction {
 		
 		// Use adaptation of Claude Shannon's relative weights, referenced from
 		// chessprogramming.wikispaces.com
-		int utility = (90 * queend) + (50 * rookd) + (30 * (bishopd + knightd)) +
-				(10 * pawnd);
+		//int utility = (90 * queend) + (50 * rookd) + (30 * (bishopd + knightd)) +
+		//		(10 * pawnd);
 		
-		if (color == Chess.BLACK) { // white's perspective
+		// From ChessBin.com
+		// http://www.chessbin.com/post/chess-board-evaluation.aspx
+		int utility = (975 * queend) + (500 * rookd) + (325 * bishopd) + 
+				(320 * knightd) + (100 * pawnd) + (32767 * kingd);
+		
+		if (color == Chess.WHITE) { // white's perspective
 			utility = - utility;
 		}
 		

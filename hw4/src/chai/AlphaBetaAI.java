@@ -4,12 +4,10 @@ import java.util.Random;
 import chesspresso.move.*;
 import chesspresso.position.Position;
 
-/** Iterative deepening minimax search 
- *  Standard minimax - no pruning
- *  Explores at iteratively increasing depth
+/** Iterative deepening minimax search with alpha-beta pruning
  */
 
-public class MinimaxAI implements ChessAI {
+public class AlphaBetaAI implements ChessAI {
 	private int finalDepth;	// absolute max depth to explore, return after this
 	private int color;
 	private short bestMove;
@@ -17,7 +15,7 @@ public class MinimaxAI implements ChessAI {
 	private int nodesExplored = 0;
 	private Random rand = new Random();
 	
-	public MinimaxAI(int c, int fd) {
+	public AlphaBetaAI(int c, int fd) {
 		this.color = c; 		// color of this player
 		this.finalDepth = fd;
 	}
@@ -33,7 +31,8 @@ public class MinimaxAI implements ChessAI {
 			// If timer runs out before we explore at finalDepth, return the
 			// best value we have found in allotted time.
 		}
-		System.out.println("Minimax Nodes explored: " + nodesExplored);
+		System.out.println("Alpha Beta Nodes explored: " + nodesExplored);
+		//System.out.println("Utility: " + bestMoveValue);
 		return bestMove;
 	}
 	 
@@ -45,7 +44,8 @@ public class MinimaxAI implements ChessAI {
 			short m = moves[i];
 			try {
 				position.doMove(m);
-				value = minValue(position, 1, cutoffDepth);
+				value = minValue(position, - Integer.MAX_VALUE, 
+						Integer.MAX_VALUE, 1, cutoffDepth);
 				
 				if (value > bestMoveValue) {
 					bestMove = m;
@@ -61,7 +61,7 @@ public class MinimaxAI implements ChessAI {
 	}
 	
 	// Return maximum utility value from this position forward
-	private int maxValue(Position position, int depth, int cutoffDepth) {
+	private int maxValue(Position position, int alpha, int beta, int depth, int cutoffDepth) {
 		if (cutOffTest(position, depth, cutoffDepth)) {
 			return utility(position);
 		}
@@ -71,9 +71,13 @@ public class MinimaxAI implements ChessAI {
 			short m = moves[i];
 			try {
 				position.doMove(m);
-				maxValue = Math.max(maxValue, minValue(position, depth + 1, cutoffDepth));
+				maxValue = Math.max(maxValue, minValue(position, alpha, beta, depth + 1, cutoffDepth));
 				// Undo the move on original position so that we can try another
 				position.undoMove();
+				if (maxValue >= beta) {
+					return maxValue;
+				}
+				alpha = Math.max(alpha, maxValue);
 			} catch(IllegalMoveException e) {
 				System.out.println("Tried illegal move in minimax.");
 			}
@@ -82,7 +86,7 @@ public class MinimaxAI implements ChessAI {
 	}
 	
 	// Return minimum utility value from this position forward
-	private int minValue(Position position, int depth, int cutoffDepth) {
+	private int minValue(Position position, int alpha, int beta, int depth, int cutoffDepth) {
 		if (cutOffTest(position, depth, cutoffDepth)) {
 			return utility(position);
 		}
@@ -92,9 +96,13 @@ public class MinimaxAI implements ChessAI {
 			short m = moves[i];
 			try {
 				position.doMove(m);
-				minValue = Math.min(minValue, maxValue(position, depth + 1, cutoffDepth));
+				minValue = Math.min(minValue, maxValue(position, alpha, beta, depth + 1, cutoffDepth));
 				// Undo the move on original position so that we can try another
 				position.undoMove();
+				if (minValue <= alpha) {
+					return minValue; 
+				}
+				beta = Math.min(beta, minValue);
 			} catch(IllegalMoveException e) {
 				System.out.println("Tried illegal move in minimax.");
 			}
