@@ -20,6 +20,7 @@ public class MapColoringCSP extends ConstraintSatisfactionProblem {
 	HashMap<Integer, String> intToColor = new HashMap<Integer, String>();
 	
 	public MapColoringCSP(String filename) {
+		super();
 		// Load graph
 		loadGraphFromFile(filename);
 		// Generate constraint
