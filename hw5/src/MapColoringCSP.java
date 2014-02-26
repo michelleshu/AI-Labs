@@ -26,17 +26,6 @@ public class MapColoringCSP extends ConstraintSatisfactionProblem {
 		this.constraint = generateColorConstraint();
 		// Generate domains
 		this.domains = generateDomains();
-		
-		this.unassigned = new ArrayList<Integer>();
-		// Initialize assignments to array of zeros. (0 implies no assignment)
-		this.assignment = 
-				new ArrayList<Integer>(Collections.nCopies(this.domains.size(), 0));
-		for (int i = 0; i < this.assignment.size(); i++) {
-			this.unassigned.add(i);
-		}
-		
-		// Tests to be printed
-
 	}
 	
 	
@@ -82,7 +71,7 @@ public class MapColoringCSP extends ConstraintSatisfactionProblem {
 		for (String color : colorToInt.keySet()) {
 			allColors.add(colorToInt.get(color));
 		}
-		for (int i = 0; i <= variableToInt.size(); i++) {
+		for (int i = 0; i < variableToInt.size(); i++) {
 			domains.add(i, allColors);
 		}
 		return domains;
@@ -128,7 +117,7 @@ public class MapColoringCSP extends ConstraintSatisfactionProblem {
 	}
 	
 	private void initializeVariableMapping(Set<String> variableNames) {
-		int i = 1;
+		int i = 0;
 		for (String v : variableNames) {
 			if (v != "values") {
 				this.variableToInt.put(v, i);
@@ -139,7 +128,7 @@ public class MapColoringCSP extends ConstraintSatisfactionProblem {
 	}
 	
 	private void initializeColorMapping(ArrayList<String> colors) {
-		int i = 1;
+		int i = 0;
 		for (String c : colors) {
 			this.colorToInt.put(c, i);
 			this.intToColor.put(i, c);
@@ -162,5 +151,10 @@ public class MapColoringCSP extends ConstraintSatisfactionProblem {
 	
 	public static void main(String[] args) {
 		MapColoringCSP mc = new MapColoringCSP("src/Australia.txt");
+		int[] assignment = mc.solve();
+		for (int i = 0; i < assignment.length; i++) {
+			System.out.print(mc.intToVariable.get(i) + ": ");
+			System.out.print(mc.intToColor.get(assignment[i]) + "\n");
+		}
 	}
 }
