@@ -12,6 +12,6 @@ public class Pair {
 	}
 	
 	public int hashCode() {
-		return (31 * this.a) + (31 * 31 * this.b);
+		return (57 * this.a) + (57 * 57 * this.b);
 	}
 }

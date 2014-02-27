@@ -73,7 +73,7 @@ public class MapColoringCSP extends ConstraintSatisfactionProblem {
 			allColors.add(colorToInt.get(color));
 		}
 		for (int i = 0; i < variableToInt.size(); i++) {
-			domains.add(i, allColors);
+			domains.add(i, new ArrayList<Integer>(allColors));
 		}
 		return domains;
 	}
@@ -86,7 +86,7 @@ public class MapColoringCSP extends ConstraintSatisfactionProblem {
 		this.initializeColorMapping(this.graph.get("values"));
 		
 		// Get all valid pairs of colors (no repeats)
-		HashSet<Pair> validPairs = getValidColorPairs();
+		//HashSet<Pair> validPairs = getValidColorPairs();
 		
 		// Define constraint as set of allowed values for each possible pair
 		// and set of variables involved in the constraint
@@ -109,7 +109,7 @@ public class MapColoringCSP extends ConstraintSatisfactionProblem {
 				}
 				int ni = variableToInt.get(neighbor);
 				Pair vPair = new Pair(vi, ni);
-				allowedValues.put(vPair, validPairs);
+				allowedValues.put(vPair, getValidColorPairs());
 			}
 		}
 		
@@ -123,6 +123,8 @@ public class MapColoringCSP extends ConstraintSatisfactionProblem {
 			if (v != "values") {
 				this.variableToInt.put(v, i);
 				this.intToVariable.put(i, v);
+				System.out.print(v + " - ");
+				System.out.print(i + "\n");
 				i++;
 			} 
 		}
@@ -151,8 +153,9 @@ public class MapColoringCSP extends ConstraintSatisfactionProblem {
 	}
 	
 	public static void main(String[] args) {
-		MapColoringCSP mc = new MapColoringCSP("src/Australia.txt");
+		MapColoringCSP mc = new MapColoringCSP("src/UnitedStates.txt");
 		int[] assignment = mc.solve();
+		System.out.println("Nodes visited: " + mc.nodesVisited);
 		for (int i = 0; i < assignment.length; i++) {
 			System.out.print(mc.intToVariable.get(i) + ": ");
 			System.out.print(mc.intToColor.get(assignment[i]) + "\n");
