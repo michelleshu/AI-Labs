@@ -1,0 +1,63 @@
+R,B,O,Y,G
+Xinjiang
+Gansu,Qinghai,Tibet
+Tibet
+Xinjiang,Qinghai,Sichuan,Yunnan
+Qinghai
+Gansu,Xinjiang,Tibet,Sichuan
+Gansu
+Xinjiang,Qinghai,Inner Mongolia,Ningxia,Shaanxi,Sichuan
+Inner Mongolia
+Gansu,Ningxia,Shaanxi,Shanxi,Hebei,Liaoning,Jilin,Heilongjiang
+Ningxia
+Inner Mongolia,Gansu,Shaanxi
+Sichuan
+Qinghai,Tibet,Yunnan,Gansu,Shaanxi,Chongqing,Guizhou
+Yunnan
+Tibet,Sichuan,Guizhou,Guangxi
+Guizhou
+Yunnan,Guangxi,Hunan,Chongqing,Sichuan
+Guangxi
+Yunnan,Guizhou,Hunan,Guangdong
+Guangdong
+Guangxi,Hunan,Jiangxi,Fujian
+Fujian
+Guangdong,Jiangxi,Zhejiang
+Chongqing
+Sichuan,Shaanxi,Hubei,Hunan,Guizhou
+Shaanxi
+Gansu,Ningxia,Inner Mongolia,Shanxi,Henan,Hubei,Chongqing,Sichuan
+Shanxi
+Shaanxi,Henan,Hebei,Inner Mongolia
+Hebei
+Shanxi,Inner Mongolia,Liaoning,Beijing,Tianjin,Shandong,Henan
+Beijing
+Tianjin,Hebei
+Tianjin
+Hebei,Beijing
+Liaoning
+Hebei,Inner Mongolia,Jilin
+Jilin
+Inner Mongolia,Heilongjiang,Liaoning
+Heilongjiang
+Inner Mongolia,Jilin
+Shandong
+Hebei,Henan,Jiangsu
+Jiangsu
+Shandong,Anhui,Shanghai,Zhejiang
+Shanghai
+Jiangsu,Zhejiang
+Henan
+Shanxi,Hebei,Shandong,Anhui,Hubei,Shaanxi
+Anhui
+Henan,Hubei,Jiangxi,Zhejiang,Jiangsu,Shandong
+Zhejiang
+Shanghai,Jiangsu,Anhui,Jiangxi,Fujian
+Jiangxi
+Anhui,Hubei,Hunan,Guangdong,Fujian,Zhejiang
+Hunan
+Chongqing,Guizhou,Guangxi,Guangdong,Jiangxi,Hubei
+Hubei
+Chongqing,Hunan,Jiangxi,Anhui,Henan,Shaanxi
+Hainan
+none

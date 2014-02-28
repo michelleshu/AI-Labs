@@ -9,22 +9,18 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 public class ConstraintSatisfactionProblem {
 	
 	public static final boolean useMRV = true;
 	public static final boolean useLCV = false;
+	public static final boolean useFC = true;
+	public static final boolean useMAC = false;
 	
 	public Constraint constraint;
 	public ArrayList<ArrayList<Integer>> domains;
 	public int nodesVisited;
-//	private PriorityQueue<Integer> minRemainingValues;
-//	
-//	public class MRVComparator implements Comparator<Integer> {
-//		public int compare(Integer a, Integer b) {
-//			return domains.get(a).size() - domains.get(b).size();
-//		}
-//	}
 	
 	public ConstraintSatisfactionProblem() {
 		
@@ -34,15 +30,38 @@ public class ConstraintSatisfactionProblem {
 		ArrayList<ArrayList<Integer>> dom) {
 		this.constraint = cons;
 		this.domains = dom;
-		
-		// For heuristics
-//		if (useMRV) {
-//			this.minRemainingValues = new PriorityQueue<Integer>(domains.size(), 
-//					new MRVComparator());
-//			for (int i = 0; i < domains.size(); i++) {
-//				minRemainingValues.add(i);
-//			}
-//		}
+	}
+	
+	public int[] solve2() {
+		// Initialize assignments to array of zeros. (-1 implies no assignment)
+		int[] assignment = new int[this.domains.size()];
+		Arrays.fill(assignment, -1);
+		// Initialize list of unassigned variables to all variables
+		ArrayList<Integer> unassigned = new ArrayList<Integer>();
+		for (int i = 0; i < this.domains.size(); i++) {
+			unassigned.add(i);
+		}
+		return backtrack(assignment, unassigned);
+	}
+
+	private int[] backtrack2(int[] assignment, ArrayList<Integer> unassigned) {
+		nodesVisited++;
+		if (unassigned.isEmpty()) { return assignment; }
+
+		int var = unassigned.remove(unassigned.size() - 1);
+		for (int value : domains.get(var)) {
+			assignment[var] = value;	// Try this assignment
+			// If consistent, continue forward exploration
+			if (constraint.isConsistent(assignment, var)) {
+				int[] result = backtrack(assignment, unassigned);
+				if (result != null) {	// Successful complete assignment
+					return result;
+				}
+			}
+		}
+		// Didn't work, have to backtrack and come back to this one
+		unassigned.add(var);
+		return null;
 	}
 
 	public int[] solve() {
@@ -62,20 +81,26 @@ public class ConstraintSatisfactionProblem {
 		nodesVisited++;
 		if (unassigned.isEmpty()) { return assignment; }
 		
-		//int var = selectUnassignedVariable(unassigned);
-		int var = unassigned.remove(unassigned.size() - 1);
+		int var = selectUnassignedVariable(unassigned);
 		ArrayList<Integer> values = orderDomainValues(var, unassigned);
 		
 		for (int i = 0; i < values.size(); i++) {
 			int value = values.get(i);
 			assignment[var] = value;
-			//System.out.println("Assigning " + value + " to " + var);
 			/* Trying the assignment var = value
 			   By making this assignment, modifying domains of some variables.
 			   Modify domains but save their old values in hash table in case
 			   we have to backtrack. */
-			//HashMap<Integer, ArrayList<Integer>> oldDomains = 
-			//				updateDomains(var, value, unassigned);
+			HashMap<Integer, ArrayList<Integer>> oldDomains = 
+					new HashMap<Integer, ArrayList<Integer>>();
+			if (useFC) {
+				oldDomains = updateDomains(var, value, unassigned);
+			} else if (useMAC) {
+				oldDomains = updateMACDomains(var, value, unassigned);
+				if (oldDomains == null) { // this assignment not going to work
+					return null;
+				}
+			}
 			
 			// If consistent, continue forward exploration
 			if (constraint.isConsistent(assignment, var)) {
@@ -85,11 +110,14 @@ public class ConstraintSatisfactionProblem {
 				}
 			}
 			// If not consistent, reset old domains and try new value
-			//restoreOldDomains(oldDomains);
+			if (useFC || useMAC) {
+				restoreOldDomains(oldDomains);
+			}
 		}
 		
 		// No working assignments, have to backtrack and come back to this var
 		unassigned.add(var);
+		assignment[var] = -1;
 		return null;
 	}
 	
@@ -120,6 +148,7 @@ public class ConstraintSatisfactionProblem {
 			 * of values deleted from neighboring domains. Store this by 
 			 * creating pair (value, constraining effect size). Sort the pairs.
 			 */
+			
 			ArrayList<Pair> valueEffects = new ArrayList<Pair>(); 
 			for (int value : this.domains.get(var)) {
 				HashMap<Integer, ArrayList<Integer>> origValues = 
@@ -182,6 +211,63 @@ public class ConstraintSatisfactionProblem {
 		return oldDomains;
 	}
 	
+	private HashMap<Integer, ArrayList<Integer>> updateMACDomains(int assignedVar, 
+			int assignedValue, ArrayList<Integer> unassigned) {
+		HashMap<Integer, ArrayList<Integer>> oldDomains = 
+				new HashMap<Integer, ArrayList<Integer>>();
+		LinkedList<Pair> q = new LinkedList<Pair>();
+		
+		// Add all arcs incident on this last assignment to the queue
+		for (int other : unassigned) {
+			if (this.constraint.allowedValues.containsKey(new Pair(other, assignedVar))) {
+				q.addLast(new Pair(other, assignedVar));
+				oldDomains.put(other, new ArrayList<Integer>(this.domains.get(other)));
+			}
+		}
+		
+		while (! q.isEmpty()) {
+			Pair current = q.removeFirst();
+			if (revise(current)) {
+				if (this.domains.get(current.a).isEmpty()) { 
+					restoreOldDomains(oldDomains);
+					return null;
+				}
+				for (int other : unassigned) {
+					if (this.constraint.allowedValues.containsKey(
+							new Pair(other, current.a))) {
+						if (other != current.b) {
+							q.addLast(new Pair(current.a, other));
+							oldDomains.put(other, new ArrayList<Integer>(this.domains.get(other)));
+						}
+					}
+				}
+			}
+		}
+		return oldDomains;
+	}
+	
+	/* Return true if we revise the domain of p.a */
+	private boolean revise(Pair p) {
+		boolean revised = false;
+		HashSet<Pair> allowedPairs = this.constraint.allowedValues.get(p);
+		ArrayList<Integer> aDomain = new ArrayList<Integer>(this.domains.get(p.a));
+		ArrayList<Integer> bDomain = new ArrayList<Integer>(this.domains.get(p.b));
+		for (int i : aDomain) {
+			boolean allowed = false;
+			for (int j : bDomain) {
+				if (allowedPairs != null && allowedPairs.contains(new Pair(i, j))) {
+					allowed = true;	// allowable, i can remain in p.a's domain
+				}
+			}
+			// No acceptable value for i found, remove i
+			if (! allowed) {
+				this.domains.get(p.a).remove((Integer) i);
+				revised = true;
+			}
+		}
+		return revised;
+	}
+	
 	/* Backtrack: Replace domains with their old values */
 	private void restoreOldDomains(HashMap<Integer, ArrayList<Integer>> oldDomains) {
 		Iterator<Integer> iter = oldDomains.keySet().iterator();
@@ -190,67 +276,4 @@ public class ConstraintSatisfactionProblem {
 			this.domains.set(var, oldDomains.get(var));
 		}
 	}
-	
-
-
-//	public static void main(String[] args) {
-//		
-//		// Simple test case:
-//		HashMap<Pair, HashSet<Pair>> allowedValues = new HashMap<Pair, HashSet<Pair>>();
-//		HashSet<Pair> set = new HashSet<Pair>();
-//		set.add(new Pair(0, 1));
-//		set.add(new Pair(0, 2));
-//		set.add(new Pair(1, 0));
-//		set.add(new Pair(1, 2));
-//		set.add(new Pair(2, 0));
-//		set.add(new Pair(2, 1));
-//		allowedValues.put(new Pair(0, 1), new HashSet<Pair>(set));
-//		allowedValues.put(new Pair(1, 0), new HashSet<Pair>(set));
-//		
-//		HashSet<Integer> variablesInvolved = new HashSet<Integer>();
-//		variablesInvolved.add(0);
-//		variablesInvolved.add(1);
-//		
-//		Constraint c = new Constraint(allowedValues, variablesInvolved);
-//		
-//		ArrayList<Integer> d1 = new ArrayList<Integer>();
-//		d1.add(0);
-//		d1.add(1);
-//		d1.add(2);
-//		
-//		ArrayList<Integer> d2 = new ArrayList<Integer>();
-//		d2.add(0);
-//		d2.add(1);
-//		d2.add(2);
-//		
-//		ArrayList<ArrayList<Integer>> domain = new ArrayList<ArrayList<Integer>>();
-//		domain.add(d1);
-//		domain.add(d2);
-//		
-//		ConstraintSatisfactionProblem csp = new ConstraintSatisfactionProblem(c, domain);
-//		
-//		ArrayList<Integer> unassigned = new ArrayList<Integer>();
-//		unassigned.add(1);
-//		
-//		HashMap<Integer, ArrayList<Integer>> old = csp.updateDomains(0, 1, unassigned);
-//		for (ArrayList<Integer> d : csp.domains) {
-//			System.out.print("{");
-//			for (int i : d) {
-//				System.out.print(i + ", ");
-//			}
-//			System.out.print("}\n");
-//		}
-//		
-//		System.out.println(old.size());
-//		System.out.println(old.get(1));
-//		csp.restoreOldDomains(old);
-//		
-//		for (ArrayList<Integer> d : csp.domains) {
-//			System.out.print("{");
-//			for (int i : d) {
-//				System.out.print(i + ", ");
-//			}
-//			System.out.print("}\n");
-//		}
-//	}
 }

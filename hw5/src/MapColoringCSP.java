@@ -68,12 +68,12 @@ public class MapColoringCSP extends ConstraintSatisfactionProblem {
 	
 	private ArrayList<ArrayList<Integer>> generateDomains() {
 		ArrayList<ArrayList<Integer>> domains = new ArrayList<ArrayList<Integer>>();
-		ArrayList<Integer> allColors = new ArrayList<Integer>();
-		for (String color : colorToInt.keySet()) {
-			allColors.add(colorToInt.get(color));
-		}
 		for (int i = 0; i < variableToInt.size(); i++) {
-			domains.add(i, new ArrayList<Integer>(allColors));
+			ArrayList<Integer> allColors = new ArrayList<Integer>();
+			for (String color : colorToInt.keySet()) {
+				allColors.add(colorToInt.get(color));
+			}
+			domains.add(i, allColors);
 		}
 		return domains;
 	}
