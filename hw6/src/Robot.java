@@ -8,12 +8,18 @@ public class Robot {
 		this.sensor = new Sensor(grid);
 		this.beliefs = new double[grid.height][grid.width];
 		// Initialize belief state with uniform probabilities
-		Grid.setAll(beliefs, grid, 1.0 / (grid.validSquares));
+		Matrix.setAll(beliefs, grid, 1.0 / (grid.validSquares));
 	}
 	
 	public void update() {
-		sensor.getNextReading()
+		
+		
+		// Move and detect color from sensor
+		char color = sensor.getNextReading();
 	}
 	
-	
+	private double[][] getTransitionUpdate() {
+		double[][] newBelief = new double[grid.height][grid.width];
+		for (int i = 0; i < grid.height)
+	}
 }

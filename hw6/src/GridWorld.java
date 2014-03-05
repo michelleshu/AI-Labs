@@ -12,6 +12,7 @@ public class GridWorld {
 	public int width;
 	public int height;
 	public int validSquares;	// non-obstacle squares
+	int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 	
 	public GridWorld(int w, int h) {
 		this.width = w;
@@ -66,6 +67,24 @@ public class GridWorld {
 	
 	public boolean isObstacle(int i, int j) {
 		return colors[i][j] == '.';
+	}
+	
+	public int[][] getAdjacentLocs(int i, int j) {
+		// Get the 4 adjacent locations to (i, j) from directions N, E, S, W
+		// If the neighbor is edge of board or obstacle, replace with (i, j)
+		int[][] adjacentLocs = new int[4][2];
+		int index = 0;
+		for (int[] dir: directions) {
+			if (! isObstacle(i + dir[0], j + dir[1])) {
+				adjacentLocs[index][0] = i + dir[0];
+				adjacentLocs[index][1] = j + dir[1];
+			} else {
+				adjacentLocs[index][0] = i + dir[0];
+				adjacentLocs[index][1] = j + dir[1];
+			}
+			i++;
+		}
+		return adjacentLocs;
 	}
 	
 	public static void main(String[] args) {
