@@ -33,7 +33,13 @@ public class Matrix {
 		}
 	}
 	
-	public static double getAverageOfLocs(double[][] matrix) {
-		
+	// Get average of matrix entries at given (i, j) locations
+	public static double getAverage(double[][] matrix, int[][] locs) {
+		double sum = 0.0;
+		for (int l = 0; l < locs.length; l++) {
+			int[] loc = locs[l];
+			sum += matrix[loc[0]][loc[1]];
+		}
+		return (sum / (double) locs.length);
 	}
 }

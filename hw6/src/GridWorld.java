@@ -69,27 +69,33 @@ public class GridWorld {
 		return colors[i][j] == '.';
 	}
 	
+	public boolean inBounds(int i, int j) {
+		return !(i < 0 || j < 0 || i >= height || j >= width);
+	}
+	
 	public int[][] getAdjacentLocs(int i, int j) {
 		// Get the 4 adjacent locations to (i, j) from directions N, E, S, W
 		// If the neighbor is edge of board or obstacle, replace with (i, j)
 		int[][] adjacentLocs = new int[4][2];
 		int index = 0;
 		for (int[] dir: directions) {
-			if (! isObstacle(i + dir[0], j + dir[1])) {
+			if (inBounds(i + dir[0], j + dir[1]) && ! isObstacle(i + dir[0], j + dir[1])) {
 				adjacentLocs[index][0] = i + dir[0];
 				adjacentLocs[index][1] = j + dir[1];
 			} else {
-				adjacentLocs[index][0] = i + dir[0];
-				adjacentLocs[index][1] = j + dir[1];
+				adjacentLocs[index][0] = i;
+				adjacentLocs[index][1] = j;
 			}
-			i++;
+			index++;
 		}
+		
 		return adjacentLocs;
 	}
 	
 	public static void main(String[] args) {
 		GridWorld g = new GridWorld("src/grid1.txt", 5, 4);
 		g.printGrid();
+		g.getAdjacentLocs(0, 0);
 	}
 	
 }

@@ -3,6 +3,9 @@
 import java.util.Random;
 
 public class Sensor {
+	public static final double P_CORRECT = 0.88;
+	public static final double P_INCORRECT = 0.04;
+	
 	char[] colors = {'R', 'G', 'B', 'Y'};
 	int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 	
@@ -22,9 +25,9 @@ public class Sensor {
 	// Get imperfect sensor reading
 	public char getNextReading() {
 		move();
-		char correctReading = grid.colors[x][y];
-		if (rand.nextDouble() < 0.88) {
-			// Return the correct color 88% of the time
+		char correctReading = grid.colors[y][x];
+		if (rand.nextDouble() < P_CORRECT) {
+			// Return the correct color certain percentage of the time
 			return correctReading;
 		} else {
 			char wrongReading = colors[rand.nextInt(colors.length)];
@@ -38,7 +41,8 @@ public class Sensor {
 	// Move the robot in a random direction
 	public void move() {
 		int[] dir = directions[rand.nextInt(directions.length)];
-		if (! grid.isObstacle(x + dir[0], y + dir[1])) {
+		if (grid.inBounds(x + dir[0], y + dir[1]) && 
+				! grid.isObstacle(x + dir[0], y + dir[1])) {
 			x += dir[0];
 			y += dir[1];
 		}
