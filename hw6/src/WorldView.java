@@ -8,7 +8,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
-public class MazeView extends Application {
+public class WorldView extends Application {
 	private Color[][] colors;
 	private double[][] locPr;	// probabilities of being at each location in grid
 	private int pixelsPerSquare = 24;
