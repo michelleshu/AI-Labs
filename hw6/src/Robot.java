@@ -16,9 +16,12 @@ public class Robot {
 	public void update() {
 		// Move robot and detect next color from sensor
 		char color = sensor.getNextReading();
-		System.out.println(color);
 		// Update belief state
 		belief = getSensorUpdate(color, getTransitionUpdate());
+		System.out.println("Color read: " + color);
+		System.out.println();
+		printBeliefState();
+		System.out.println();
 	}
 	
 	private double[][] getTransitionUpdate() {
@@ -33,7 +36,6 @@ public class Robot {
 				}
 			}
 		}
-		Matrix.normalize(newBelief);
 		return newBelief;
 	}
 	

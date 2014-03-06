@@ -41,10 +41,10 @@ public class Sensor {
 	// Move the robot in a random direction
 	public void move() {
 		int[] dir = directions[rand.nextInt(directions.length)];
-		if (grid.inBounds(x + dir[0], y + dir[1]) && 
-				! grid.isObstacle(x + dir[0], y + dir[1])) {
-			x += dir[0];
-			y += dir[1];
+		if (grid.inBounds(y + dir[0], x + dir[1]) && 
+				! grid.isObstacle(y + dir[0], x + dir[1])) {
+			y += dir[0];
+			x += dir[1];
 		}
 	}
 	

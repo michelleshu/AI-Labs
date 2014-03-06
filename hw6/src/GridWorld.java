@@ -88,7 +88,6 @@ public class GridWorld {
 			}
 			index++;
 		}
-		
 		return adjacentLocs;
 	}
 	
